@@ -239,9 +239,9 @@
             <td colspan="4">
                 Nápis<?php if (count($inscriptions) > 1) echo " #$index"; ?>:<br/>
                 <?php if (!empty($inscription->value)) { ?>
-                    <bdo dir="<?php echo $inscription->bdo; ?>">
+                    <!--<bdo dir="<?php echo $inscription->bdo; ?>">-->
                         <?php echo $inscription->value; ?>
-                    </bdo>
+                    <!--</bdo>-->
                 <?php } else {
                     echo '- nevyplněno -';
                 } ?>
