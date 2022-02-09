@@ -25,12 +25,24 @@
  		}
  		# -------------------------------------------------------
  		 	
+      
+      
+      
+      
     /*
-    *Převedená tisková sestava NU
+    *Převedená tisková sestava NUX
     *
     *
     */
     function SbirkovaSestava(){
+      return $this->pSbirkovaSestava("tiskovasestava.php");
+    }
+    function ObrazkovaSestava(){
+      return $this->pSbirkovaSestava("obrazky.php");
+      
+    }
+    
+    private function pSbirkovaSestava($verze){
       if (!$this->request->user->canDoAction('jmp_tiskovasestava')) {
         #TODO  přidat odchod při nenastaveném právu
         //TODO $this->response->setRedirect($this->request->config->get('error_display_url').'/n/3000?r='.urlencode($this->request->getFullUrlPath()));
@@ -496,7 +508,7 @@
       $arr=get_defined_vars();
       $this->view->setVar('vars',$arr );
       
- 			$this->render('tiskovasestava.php');
+ 			$this->render($verze);
  		}
     
     function About(){

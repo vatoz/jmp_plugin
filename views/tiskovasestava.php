@@ -11,6 +11,11 @@
 ?>
 <div class=no-print>
   <div style="border:thin solid orange">
+    <ul>
+    <li><a href="/jmp/Print/SbirkovaSestava?object_id=<?php echo $objectId;?>"> Sbírková sestava</a> </li>
+    <li><a href="/jmp/Print/ObrazkovaSestava?object_id=<?php echo $objectId;?>"> Obrázková sestava</a></li>
+    </ul>
+    <hr>
       Tato část nebude vytištěná!<br>      
       Obrázky jsou zatím jen vložené, nestarám se o stránkování.<br>
       Časem se možná sestava přesune přímo do tiskových výstupů.      
@@ -271,30 +276,6 @@
     </tr>
     */ ?>
 </table>
-
-<?php
-
-$i=0;
-//todo velikost 
-foreach($result['ca_object_representations.media.medium'] as $Image){
-  $i++;
-  if($i==1){
-    echo '<div id=prepictures></div>';
-    echo '<div id=pictures style="page-break-before:right; break-before:right;" >';
-    
-  }
-  if($i>2) break; //chci jen dvě fotky
-
-  echo $inventarniCislo."<br>";
-  echo $Image;
-
-}
-if($i>0){
-  echo '</div>';
-}
-
-
-?>
 
 <div class="no-print" style="color:grey;">
     <br><br><br>
