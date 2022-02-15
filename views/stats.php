@@ -13,6 +13,7 @@
 <li><A href="/jmp/Stats/ListItems">Seznamy a položky</a></li>      
   <li><A href="/jmp/Stats/ListItemsSex">Seznamy a položky - pohlaví</a></li>      
 <li><A href="/jmp/Stats/UserPrivs">Uživatélé, role, skupiny</a></li>      
+  <li><A href="/jmp/Stats/UserCopy?from=100&to=1000">Kopírování práv uživatele</a></li>      
   
 <li><A href="/jmp/Stats/UserEditors">Který uživatel používá které editory </a></li>    
   

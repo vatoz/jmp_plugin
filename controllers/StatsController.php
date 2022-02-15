@@ -66,6 +66,12 @@
       return $this->renderStat(6);  
     }
     
+    
+    function UserCopy(){
+      return $this->renderStat(12);  
+    }
+    
+    
     function ListItems(){
       return $this->renderStat(7);  
     }
