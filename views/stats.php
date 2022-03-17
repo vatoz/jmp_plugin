@@ -19,6 +19,9 @@
   
 <li><A href="/jmp/Stats/ImportImages">Kolik bylo kdy naimportováno reprezentací </a></li>    
   <li><A href="/jmp/Stats/Regexp">Kolik bylo kdy naimportováno reprezentací </a></li>    
-  
+  <li><A href="/jmp/Stats/ThumbTester">Kontrola IIF obrázků</A></li>
+  <li><A href="/jmp/Stats/DRPSObjects?set=1">Kopie sady objektů do DRPS </A></li>
+  <li><A href="/jmp/Stats/MultipartIdnoSequences">Test na duplicitní idno</A></li>
+
 </ul>  
   

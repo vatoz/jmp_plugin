@@ -80,8 +80,6 @@
       return $this->renderStat(9);  
     }
     
- 		   
-    
     function ImportImages(){
       return $this->renderStat(10);  
     }
@@ -89,14 +87,20 @@
       return $this->renderStat(11);  
     }
  		   
-  
-     
-    
-     
+    function ThumbTester(){
+      return $this->renderStat(13);  
+    }
+    function MultifileTester(){
+      return $this->renderStat(14);  
+    }
+    function DRPSObjects(){
+      return $this->renderStat(15);  
+    }
+    function MultipartIdnoSequences(){
+      return $this->renderStat(16);  
+    }
 
-    
-    
+ 
+ 		
  	}
  
-
-
