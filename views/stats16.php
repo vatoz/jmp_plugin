@@ -42,19 +42,21 @@ foreach($list as $adept){
   foreach($dotaz  as $Row){
     echo "<h2>".$Row["idno_stub"]." ". $Row["seq"]." </h2> ";
     $max=0;
+    $cnt=0;
     $SQL= "SELECT idno from ".$adept." where idno like  '".$Row["idno_stub"]."%' and deleted=0 ";
     $dotaz2 = $pdo->query($SQL);
     foreach($dotaz2  as $Row2){
         $t=substr($Row2["idno"],strlen($Row["idno_stub"] )+1);
         $t=intval($t);        
         $max=($t>$max?$t:$max);        
+        $cnt++;
     }
     if ($max>$Row["seq"]){
         echo "Possible error! Possible repair : UPDATE ca_multipart_idno_sequences set seq= ".($max+1)." where idno_stub='".$Row["idno_stub"]."'  limit 1 <br>";
         echo "List: ".$SQL."<br>";
     }
     
-        echo $max;
+        echo $max." in ".$cnt ." <br>";
     
 }
 
