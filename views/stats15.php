@@ -26,15 +26,18 @@ if(isset($_REQUEST["about"])){
 
 $o_set=new ca_sets($set);
 $sids = $o_set->getItems(['idsOnly' => true]);
+$data=array();
+
 
 foreach($sids as $id){
   $o_obj=new ca_objects($id);
   //echo "<br>".$id." ";
 
+  $rep=0;
   $SQL1 = "select  representation_id from ca_objects_x_object_representations where object_id=".$id." order by rank";
   $dotaz1 = $pdo->query($SQL1);
     foreach($dotaz1  as $Row1){
-    
+    $rep++;
 
     $SQL2 = "select  entity_id from ca_objects_x_entities where object_id=".$id ." and entity_id not in (select entity_id from ca_entities where deleted=1) ";
     $dotaz2 = $pdo->query($SQL2);
@@ -49,24 +52,22 @@ foreach($sids as $id){
       $m=$r->getRepresentationMediaForIDs(array($Row1["representation_id"]),array("preview", "small", "medium", "large")  );
       //var_export($m[$Row1["representation_id"]]['urls']);
       $p= $m[$Row1["representation_id"]]['urls'];
-
-      echo "SELECT '".$p['preview']."','".$p['small']."','".$p['medium']."','".$p['large']."',2, id, ".$id.", null,".$about." FROM victim where entity_id=".$Row2["entity_id"].";"; 
-
-        echo "<br>";
-
+      $data[$rep][]= "INSERT INTO `victim_images` ( `preview`, `small`, `medium`, `large`, `type`, `victim_id`, `object_id`, `idno`, `about`) SELECT '".$p['preview']."','".$p['small']."','".$p['medium']."','".$p['large']."',2, id, ".$id.", null,".$about." FROM victim where entity_id=".$Row2["entity_id"]." or id_external=".$Row2["entity_id"].";"."<br>/*".$m[$Row1["representation_id"]]['tags']['preview']."*/<br><br>";
+      
     }
 
 
   }
 
 
-  
-
-//INSERT INTO `victim_images` (, `preview`, `small`, `medium`, `large`, `type`, `victim_id`, `object_id`, `idno`, `about`) VALUES (	'https://ca.jewishmuseum.cz/media/zmarch/images/8/9/9/1/98532_ca_object_representations_media_899193_preview.jpg',	'https://ca.jewishmuseum.cz/media/zmarch/images/8/9/9/1/59983_ca_object_representations_media_899193_small.jpg',	'https://ca.jewishmuseum.cz/media/zmarch/images/8/9/9/1/27499_ca_object_representations_media_899193_medium.jpg',	'https://ca.jewishmuseum.cz/media/zmarch/images/8/9/9/1/26818_ca_object_representations_media_899193_large.jpg',	1,	12325,	439939,	NULL,	NULL);
+}
 
 
-  
+foreach ($data as $l1){
+  echo "<hr>";
+  foreach($l1 as $l2){
+    echo $l2;
+  }
 
 
 }
-
