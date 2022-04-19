@@ -99,8 +99,6 @@
     function MultipartIdnoSequences(){
       return $this->renderStat(16);  
     }
-
- 
  		
  	}
  
