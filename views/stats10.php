@@ -33,7 +33,7 @@ function showdata($Verze){
   } catch (PDOException $e) {
       die('Connection failed: ' . $e->getMessage());
   }
-$Years=array(2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021);
+$Years=array(2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022);
 
 echo "<table border=1 id=ttt_".$Verze." >";
 echo "<tr>";
@@ -54,7 +54,7 @@ foreach($dotaz_typ  as $Typ){
 		$Query="SELECT count(distinct ca_objects.object_id) as digits, YEAR(FROM_UNIXTIME(log_datetime)) as representation_creation FROM ca_objects inner join ca_objects_x_object_representations on  ca_objects.object_id = ca_objects_x_object_representations.object_id	
 		inner join `ca_change_log` on representation_id=logged_row_id  where  logged_table_num =56 and changetype = 'I'  
 		and type_id = 
-		".$Typ[item_id]." group by representation_creation";
+		".$Typ['item_id']." group by representation_creation";
 		
 	
 	
@@ -65,7 +65,7 @@ foreach($dotaz_typ  as $Typ){
 		$Query="SELECT count(*) as digits, YEAR(FROM_UNIXTIME(log_datetime)) as representation_creation FROM ca_objects inner join ca_objects_x_object_representations on  ca_objects.object_id = ca_objects_x_object_representations.object_id	
 		inner join `ca_change_log` on representation_id=logged_row_id  where  logged_table_num =56 and changetype = 'I'  
 		and type_id = 
-		".$Typ[item_id]." group by representation_creation";
+		".$Typ['item_id']." group by representation_creation";
 		
 		
 		break;
