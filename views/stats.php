@@ -23,5 +23,9 @@
   <li><A href="/jmp/Stats/DRPSObjects?set=1&about=about">Kopie sady objektů do DRPS </A></li>
   <li><A href="/jmp/Stats/MultipartIdnoSequences">Test na duplicitní idno</A></li>
 
+  <li><A href="/jmp/Stats/Places">Výpis míst v čr</A></li>
+  <li><A href="/jmp/Stats/Fonts">fonty</A></li>
+  <li><A href="/jmp/Stats/MapSynagogues">Mapa synagog</A></li>
+
 </ul>  
   

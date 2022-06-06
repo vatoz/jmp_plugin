@@ -21,9 +21,7 @@
  			parent::__construct($po_request, $po_response, $pa_view_paths);
  			//$this->opo_config = Configuration::load(__CA_APP_DIR__.'/conf/search.conf');
       // Load plugin stylesheet
- 			//MetaTagManager::addLink('stylesheet', __CA_URL_ROOT__."/app/plugins/jmp/css/plugin.css",'text/css');	
-      
-      
+ 		    
       
  		}
  		# -------------------------------------------------------
@@ -99,6 +97,18 @@
     function MultipartIdnoSequences(){
       return $this->renderStat(16);  
     }
+    function Places(){
+      return $this->renderStat(17);  
+    }
+    function Fonts(){
+      return $this->renderStat(18);  
+    }
+    function MapSynagogues(){
+      return $this->renderStat(19);  
+    }
+ 
+ 
+
  		
  	}
  
