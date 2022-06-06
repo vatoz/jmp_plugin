@@ -25,7 +25,7 @@
 
   <li><A href="/jmp/Stats/Places">Výpis míst v čr</A></li>
   <li><A href="/jmp/Stats/Fonts">fonty</A></li>
-  <li><A href="/jmp/Stats/MapSynagogues">Mapa synagog</A></li>
+  <li><A href="/jmp/Stats/Map">Mapa</A></li>
 
 </ul>  
   

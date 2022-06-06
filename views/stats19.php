@@ -3,7 +3,7 @@ Map test
 <link rel="stylesheet" href="/app/plugins/jmp/css/leaflet.css"  />
 <script src="/app/plugins/jmp/js/leaflet.js" ></script>
 
-<div id="map" style="height: 400px; "></div>
+<div id="map" style="height: 600px; "></div>
 <script>
     var map = L.map('map').setView([49.992, 14.651], 7);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -26,26 +26,40 @@ try {
     die('Connection failed: ' . $e->getMessage());
 }
 
-//synagogue=2286
+$maps=array();
+
+
+$Q1="SELECT * FROM `ca_list_items` WHERE `parent_id` = '174'";
+$dotaz1 = $pdo->query($Q1);
+  foreach($dotaz1  as $Row1){
+
+$list=array();
 
 $Query="SELECT ca_attributes.row_id,value_decimal1,value_decimal2  FROM `ca_attributes`
 left join ca_attribute_values on ca_attributes.attribute_id= ca_attribute_values.attribute_id 
 WHERE ca_attributes.`element_id` = 102 AND `table_num` = 72 and row_id in 
 (SELECT place_id
 FROM `ca_places`
-WHERE `type_id` in( 2286) AND `hierarchy_id` = 162) ";
+WHERE `type_id` = ".$Row1["item_id"]." AND `hierarchy_id` = 162) ";
 
 //  $Query="SELECT *  FROM `ca_places` inner join ca_place_labels on ca_places.place_id= ca_place_labels.place_id   WHERE `hierarchy_id` = '162' AND `type_id` = '2286' AND `deleted` = '0'    and ca_place_labels.locale_id=1 ";
-    
+
+
   $dotaz = $pdo->query($Query);
   foreach($dotaz  as $Row){
+ 
+    $list[]= "L.marker([".$Row["value_decimal1"].",".$Row["value_decimal2"]."])";
 
-
-    echo "\n";
-    echo "L.marker([".$Row["value_decimal1"].",".$Row["value_decimal2"]."]).addTo(map);";
+}
+if(count($list)){
+    echo "\n var gr_".$Row1["item_id"]." = L.layerGroup([".implode(",\n",$list)."]);";
+    $maps[]='"'.$Row1["idno"].'" : gr_'.$Row1["item_id"];
+}
 
 }
 
+echo "\n var overlayMaps={".implode(",",$maps)."};";
 
-
-?></script>
+?>
+var layerControl = L.control.layers( overlayMaps).addTo(map);
+</script>

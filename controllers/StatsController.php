@@ -103,7 +103,7 @@
     function Fonts(){
       return $this->renderStat(18);  
     }
-    function MapSynagogues(){
+    function Map(){
       return $this->renderStat(19);  
     }
  
