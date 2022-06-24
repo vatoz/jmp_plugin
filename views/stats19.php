@@ -40,7 +40,7 @@ left join ca_attribute_values on ca_attributes.attribute_id= ca_attribute_values
 WHERE ca_attributes.`element_id` = 102 AND `table_num` = 72 and row_id in 
 (SELECT place_id
 FROM `ca_places`
-WHERE `type_id` = ".$Row1["item_id"]." AND `hierarchy_id` = 162) ";
+WHERE `type_id` = ".$Row1["item_id"]." AND `hierarchy_id` = 162 AND deleted=0) ";
 
 //  $Query="SELECT *  FROM `ca_places` inner join ca_place_labels on ca_places.place_id= ca_place_labels.place_id   WHERE `hierarchy_id` = '162' AND `type_id` = '2286' AND `deleted` = '0'    and ca_place_labels.locale_id=1 ";
 
@@ -48,7 +48,7 @@ WHERE `type_id` = ".$Row1["item_id"]." AND `hierarchy_id` = 162) ";
   $dotaz = $pdo->query($Query);
   foreach($dotaz  as $Row){
  
-    $list[]= "L.marker([".$Row["value_decimal1"].",".$Row["value_decimal2"]."])";
+    $list[]= "L.marker([".$Row["value_decimal1"].",".$Row["value_decimal2"]."],{ win_url: '/index.php/editor/places/PlaceEditor/Edit/place_id/".$Row["row_id"] ."#'  }).on('click', onClick)";
 
 }
 if(count($list)){
@@ -62,4 +62,8 @@ echo "\n var overlayMaps={".implode(",",$maps)."};";
 
 ?>
 var layerControl = L.control.layers( overlayMaps).addTo(map);
+function onClick(e) {
+        //console.log(this.options.win_url);
+        window.open(this.options.win_url);
+    }
 </script>
