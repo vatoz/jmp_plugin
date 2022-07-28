@@ -37,7 +37,7 @@ $SQL="select object_id, idno from ca_objects where deleted=0 and idno not in(
         $variants=explode("/",subpartrev(".",$Row["idno"]));
         $variants[]=$Row["idno"];
         $variants[]=subpartrev(".",$Row["idno"]);
-        $variants=array_unique($variant);
+        array_unique($variants);
 
         $nok=true;
         foreach($variants as $variant){
@@ -53,8 +53,7 @@ $SQL="select object_id, idno from ca_objects where deleted=0 and idno not in(
             boost,
             access,
             rel_type_id) select 57,".$Row["object_id"].",57,'I7',".$Row["object_id"].", word_id,100,0,0 from ca_sql_search_words where word= '".$variant."'
-            
-            
+                      
             ";
             $pdo->query($SQL3);
             //echo $SQL3;
