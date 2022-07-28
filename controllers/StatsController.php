@@ -106,6 +106,10 @@
     function Map(){
       return $this->renderStat(19);  
     }
+    
+    function IdnoReindex(){
+      return $this->renderStat(20);  
+    }
  
  
 

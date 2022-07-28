@@ -33,11 +33,11 @@ foreach($settings as $table=>$regexes){
 
   foreach($dotaz  as $Row){
 	$th=0;
-	foreach($regexes as $reg){
-	if(preg_match("#".$reg."#",$Row["idno"])){
+	//foreach($regexes as $reg){
+	if(preg_match("#".$regexes."#",$Row["idno"])){
 		$th=1;
 	}
-	}
+	//}
 	if($th){
 		$ok[]=$Row["idno"];
 	}else{
