@@ -122,7 +122,8 @@
               'locale' => 'cs_CZ'
           ),
           'ca_objects.remark' => array(
-              'locale' => 'cs_CZ'
+              'locale' => 'cs_CZ',
+              'returnWithStructure'=>true
           ),
           'ca_objects.description' => array(
               'locale' => 'cs_CZ'
@@ -369,7 +370,14 @@
     
       
       
-      
+      if(isset($result['ca_objects.remark'][$objectId])){
+        $t="";
+        foreach($result['ca_objects.remark'][$objectId]  as $remark){
+            if($t!=="")$t.="<br><hr>";
+            $t.=$remark['remark'];
+        }
+        $result['ca_objects.remark']=$t;
+      }
       
       
       
