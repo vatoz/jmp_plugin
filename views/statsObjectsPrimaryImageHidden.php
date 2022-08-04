@@ -80,7 +80,9 @@ having  min(access) < max(access)
       $Row["access"]==1434?"border:thin solid purple; opacity:0.9;":"border:thin solid red; opacity:0.5;"
     );
 
-    echo "\n\t".'<img style="float:left;'.$style.'" src="'. $p['preview'].'" >';
+    echo '<img style="float:left;'.$style.'" src="'. $p['preview'].'"  alt="'.
+    $Row["representation_id"]
+    .'">';
         
   
   }
