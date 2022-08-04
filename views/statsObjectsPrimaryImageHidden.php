@@ -18,34 +18,42 @@ try {
 
 //megahaluz, několikrát vnořený dotaz co získá seznam objektů, které mají primární obrázek neviditelný, ale mají nějaký, který je omezený nebo veřejný
 
-  $SQL= "
-  select  ca_objects.object_id, ca_objects.idno,  ca_objects_x_object_representations.representation_id, ca_object_representations.access
+  $SQL= "select  ca_objects.object_id, ca_objects.idno,  ca_objects_x_object_representations.representation_id, ca_object_representations.access
   
   from 
-ca_objects_x_object_representations
-left join  ca_object_representations 
-on ca_objects_x_object_representations.representation_id 
-=  ca_object_representations.representation_id 
-left join ca_objects on ca_objects_x_object_representations.object_id=ca_objects.object_id
+    ca_objects_x_object_representations
+    left join  ca_object_representations 
+    on ca_objects_x_object_representations.representation_id 
+      =  ca_object_representations.representation_id 
+    left join ca_objects on ca_objects_x_object_representations.object_id=ca_objects.object_id
 
-where 
-ca_objects.access<>1435
- and ca_objects_x_object_representations.object_id in (
+  where 
+    ca_objects.access<>1435
+      and ca_objects_x_object_representations.object_id in (
+
+select ca_objects_x_object_representations.object_id
+
+ from ca_objects_x_object_representations left join ca_object_representations on
+ca_objects_x_object_representations.representation_id=ca_object_representations.representation_id
+
+where object_id in
+(
+select ca_objects_x_object_representations.object_id from ca_objects_x_object_representations left join ca_object_representations on
+ca_objects_x_object_representations.representation_id=ca_object_representations.representation_id
 
 
+ where  is_primary=1 and access=1435
+
+)
 
 
-select object_id from ca_objects_x_object_representations  where object_id
-in (
+ group by object_id
 
-select object_id from ca_objects_x_object_representations where representation_id in(
 
-select representation_id from ca_object_representations where representation_id  in(
-SELECT representation_id
-FROM `ca_objects_x_object_representations` where is_primary=1) and
-access=1435))
+having  min(access) < max(access)
 
-group by object_id having count(*) >1) order by  ca_objects.object_id
+
+) order by  ca_objects.object_id
   
   ";
 
@@ -58,7 +66,7 @@ group by object_id having count(*) >1) order by  ca_objects.object_id
   foreach($dotaz  as $Row){
 
     if($Row["idno"]!==$last){
-      echo "\n<hr> <a href='/index.php/editor/objects/ObjectEditor/Edit/object_id/".
+      echo "\n<hr style='clear:both;'> <a href='/index.php/editor/objects/ObjectEditor/Edit/object_id/".
       $Row["object_id"]."'>". $Row["idno"]."</a><br>";
       $last=$Row["idno"];
     }
@@ -69,10 +77,10 @@ group by object_id having count(*) >1) order by  ca_objects.object_id
     //var_export($m[$Row1["representation_id"]]['urls']);
     $p= $m[$Row["representation_id"]]['urls'];
     $style= $Row["access"]==1433?" border:thin solid green":(
-      $Row["access"]==1434?"border:thin solid yellow; opacity:0.9;":"border:thin solid red; opacity:0.5;"
+      $Row["access"]==1434?"border:thin solid purple; opacity:0.9;":"border:thin solid red; opacity:0.5;"
     );
 
-    echo "\n\t".'<img style="'.$style.'" src="'. $p['preview'].'" >';
+    echo "\n\t".'<img style="float:left;'.$style.'" src="'. $p['preview'].'" >';
         
   
   }
