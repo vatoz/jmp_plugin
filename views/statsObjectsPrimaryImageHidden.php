@@ -72,7 +72,7 @@ group by object_id having count(*) >1) order by  ca_objects.object_id
       $Row["access"]==1434?"border:thin solid yellow; opacity:0.9;":"border:thin solid red; opacity:0.5;"
     );
 
-    echo '\n\t<img style="'.$style.'" src="'. $p['preview'].'" >';
+    echo "\n\t".'<img style="'.$style.'" src="'. $p['preview'].'" >';
         
   
   }
