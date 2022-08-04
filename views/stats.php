@@ -25,6 +25,8 @@
 <li><A href="/jmp/Stats/InterstitialAttribute">CSV, kolikrát je interstitial attribute použit</a></li>    
 <li><A href="/jmp/Stats/InterstitialIdno">CSV, IDNO užívající interstitial </a></li>    
 
+<li><A href="/jmp/Stats/ObjectsPrimaryImageHidden">Objekty, co mají primární reprezentaci skrytou</A></li>
+
 <li><A href="/jmp/Stats/ListItems">Seznamy a položky</a></li>      
 <li><A href="/jmp/Stats/ListItemsSex">Seznamy a položky - pohlaví</a></li>      
 

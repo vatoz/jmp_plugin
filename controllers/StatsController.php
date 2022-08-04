@@ -103,6 +103,11 @@ class StatsController extends ActionController
     return $this->renderStat('ListItemsSex');
   }
 
+  function ObjectsPrimaryImageHidden()
+  {
+    return $this->renderStat('ObjectsPrimaryImageHidden');
+  }
+
   function PlacesMap()
   {
     return $this->renderStat('PlacesMap');
@@ -133,7 +138,9 @@ class StatsController extends ActionController
     return $this->renderStat('UserPrivs');
   }
 
- 
+   
 
+
+ 
 
 }
