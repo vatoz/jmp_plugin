@@ -19,7 +19,7 @@ try {
 //megahaluz, několikrát vnořený dotaz co získá seznam objektů, které mají primární obrázek neviditelný, ale mají nějaký, který je omezený nebo veřejný
 
   $SQL= "select  ca_objects.object_id, ca_objects.idno,  ca_objects_x_object_representations.representation_id, ca_object_representations.access
-  
+  ,is_primary
   from 
     ca_objects_x_object_representations
     left join  ca_object_representations 
@@ -79,9 +79,11 @@ having  min(access) < max(access)
     $r=new ca_object_representations($Row["representation_id"]);
     $m=$r->getRepresentationMediaForIDs(array( $Row["representation_id"]),array("preview")  );
     //var_export($m[$Row1["representation_id"]]['urls']);
+    
     $p= $m[$Row["representation_id"]]['urls'];
-    $style= $Row["access"]==1433?" border:thin solid green":(
-      $Row["access"]==1434?"border:thin solid purple; opacity:0.9;":"border:thin solid red; opacity:0.5;"
+    $border=$Row['is_primary']==1?"thick":"thin";
+    $style= $Row["access"]==1433?" border:".$border." solid green":(
+      $Row["access"]==1434?"border:".$border." solid purple; opacity:0.9;":"border:".$border." solid red; opacity:0.6;"
     );
 
     echo '<img style="float:left;'.$style.'" src="'. $p['preview'].'"  alt="'.
