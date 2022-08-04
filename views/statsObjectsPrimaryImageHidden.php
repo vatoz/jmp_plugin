@@ -58,7 +58,7 @@ group by object_id having count(*) >1) order by  ca_objects.object_id
   foreach($dotaz  as $Row){
 
     if($Row["idno"]!==$last){
-      echo "<hr> <a href='/index.php/editor/objects/ObjectEditor/Edit/object_id/".
+      echo "\n<hr> <a href='/index.php/editor/objects/ObjectEditor/Edit/object_id/".
       $Row["object_id"]."'>". $Row["idno"]."</a><br>";
       $last=$Row["idno"];
     }
@@ -72,7 +72,7 @@ group by object_id having count(*) >1) order by  ca_objects.object_id
       $Row["access"]==1434?"border:thin solid yellow; opacity:0.9;":"border:thin solid red; opacity:0.5;"
     );
 
-    echo '<img style="float:left;'.$style.'" src="'. $p['preview'].'" >';
+    echo '\n\t<img style="'.$style.'" src="'. $p['preview'].'" >';
         
   
   }
