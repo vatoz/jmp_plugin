@@ -29,6 +29,10 @@ try {
 
   where 
     ca_objects.access<>1435
+    
+    and  ca_object_representations.deleted=0
+
+
       and ca_objects_x_object_representations.object_id in (
 
 select ca_objects_x_object_representations.object_id
@@ -45,7 +49,7 @@ ca_objects_x_object_representations.representation_id=ca_object_representations.
  where  is_primary=1 and access=1435
 
 )
-
+and deleted=0
 
  group by object_id
 
