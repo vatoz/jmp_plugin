@@ -51,7 +51,7 @@ group by object_id having count(*) >1) order by  ca_objects.object_id
 
 
 
-  $cnt=0;
+  
   $dotaz = $pdo->query($SQL);
   $nok=array();
   $last="";
@@ -64,8 +64,7 @@ group by object_id having count(*) >1) order by  ca_objects.object_id
     }
 
 
-
-    $t_media = new ca_object_representations( $Row["representation_id"]);
+    $r=new ca_object_representations($Row["representation_id"]);
     $m=$r->getRepresentationMediaForIDs(array( $Row["representation_id"]),array("preview")  );
     //var_export($m[$Row1["representation_id"]]['urls']);
     $p= $m[$Row["representation_id"]]['urls'];
