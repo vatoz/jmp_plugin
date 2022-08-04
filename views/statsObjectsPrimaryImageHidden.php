@@ -59,7 +59,7 @@ group by object_id having count(*) >1) order by  ca_objects.object_id
 
     if($Row["idno"]!==$last){
       echo "<hr> <a href='/index.php/editor/objects/ObjectEditor/Edit/object_id/".
-      $Row["object_id"]."'>". $Row["idno"]."</a>";
+      $Row["object_id"]."'>". $Row["idno"]."</a><br>";
       $last=$Row["idno"];
     }
 
@@ -68,12 +68,12 @@ group by object_id having count(*) >1) order by  ca_objects.object_id
     $t_media = new ca_object_representations( $Row["representation_id"]);
     $m=$r->getRepresentationMediaForIDs(array( $Row["representation_id"]),array("preview")  );
     //var_export($m[$Row1["representation_id"]]['urls']);
-    $p= $m[$Row1["representation_id"]]['urls'];
+    $p= $m[$Row["representation_id"]]['urls'];
     $style= $Row["access"]==1433?" border:thin solid green":(
       $Row["access"]==1434?"border:thin solid yellow; opacity:0.9;":"border:thin solid red; opacity:0.5;"
     );
 
-    echo '<img style="'.$style.'" src="'. $p['preview'].'" >';
+    echo '<img style="float:left;'.$style.'" src="'. $p['preview'].'" >';
         
   
   }
