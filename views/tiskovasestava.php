@@ -223,7 +223,12 @@
         </td>
     </tr>
     <tr>
-        <td>
+        <td colspan="4">
+        Poznámka ke stavu<?php
+        if (isset($stav['physical_condition_date'])) echo " (".$stav['physical_condition_date'].")";
+        ?>:<br>        
+           <?php if (isset($stav['condition_remark'])) echo $stav['condition_remark']; ?>
+
         </td>
     </tr>
     <tr>

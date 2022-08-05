@@ -283,9 +283,24 @@
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
       // stav
-
+      $stav=array();
       if (isset($result['ca_objects.physical_condition'][$objectId])) {
-          $stav = array_pop($result['ca_objects.physical_condition'][$objectId]);
+        $rok_old="1900";
+        foreach( $result['ca_objects.physical_condition'][$objectId] as $mozny_stav){
+            if(
+                $mozny_stav['physical_condition_date']>$rok_old  
+                |   
+                count($stav)==0
+            
+            ){
+
+                $stav=$mozny_stav;
+                $rok_old=$stav['physical_condition_date'];
+            }
+
+        }
+
+          //$stav = array_pop($result['ca_objects.physical_condition'][$objectId]);
 
           if (isset($stav['condition_intervention'])) {
               if ($stav['condition_intervention'] == '2235') {
@@ -294,6 +309,8 @@
                   $stav['condition_intervention'] = 'restaurováno';
               } else if ($stav['condition_intervention'] == '2234') {
                   $stav['condition_intervention'] = 'konzervováno';
+              }else{
+                $stav['condition_intervention']=$this->loadListItem( $stav['condition_intervention']);
               }
           } else {
               $stav['condition_intervention'] = '';
@@ -373,7 +390,7 @@
       if(isset($result['ca_objects.remark'][$objectId])){
         $t="";
         foreach($result['ca_objects.remark'][$objectId]  as $remark){
-            if($t!=="")$t.="<br><hr>";
+            if($t!=="")$t.="<br>";
             $t.=$remark['remark'];
         }
         $result['ca_objects.remark']=$t;
@@ -447,7 +464,7 @@
           if(isset($row['signs_translation'])) $translation= $row['signs_translation'];
           if(isset($row['signs_language_1'])){
             if($row['signs_language_1']==3850){
-              $bdo=rtl;
+              $bdo="rtl";
             }
           }              
           
