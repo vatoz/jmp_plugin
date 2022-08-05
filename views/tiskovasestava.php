@@ -58,9 +58,9 @@
                 <tr>
                     <td>Skupina:</td>
                     <td width="60%"><?php 
-                    if ($Cn_coll==1) echo "<b>";
+                   // if ($Cn_coll==1) echo "<b>";
                     if (isset($collections[0])) echo $collections[0]; 
-                    if ($Cn_coll==1) echo "</b>";
+                    //if ($Cn_coll==1) echo "</b>";
                     ?></td>
 
                     <td align="right">Inventární číslo:</td>
@@ -69,9 +69,9 @@
                 <tr>
                     <td>Podskupina:</td>
                     <td><?php 
-                    if ($Cn_coll==2) echo "<b>";
+                   // if ($Cn_coll==2) echo "<b>";
                     if (isset($collections[1])) echo $collections[1]; 
-                    if ($Cn_coll==2) echo "</b>";
+                   // if ($Cn_coll==2) echo "</b>";
                     ?></td>
                     <td align="right">Přírůstkové číslo:</td>
                     <td><?php echo $prirustkoveCislo; ?></td>
@@ -79,18 +79,18 @@
                 <tr>
                     <td>Druh předmětu:</td>
                     <td><?php
-                     if ($Cn_coll==3) echo "<b>";
+                     //if ($Cn_coll==3) echo "<b>";
                      if (isset($collections[2])) echo $collections[2];
-                     if ($Cn_coll==3) echo "</b>";
+                    // if ($Cn_coll==3) echo "</b>";
                       ?></td>
                     <td align="right">Jiné číslo:</td>
                     <td><?php echo $jineCislo; ?></td>
                 <tr>
                     <td>Typ předmětu:</td>
                     <td><?php
-                     if ($Cn_coll==4) echo "<b>";
+                   //  if ($Cn_coll==4) echo "<b>";
                      if (isset($collections[3])) echo $collections[3];
-                     if ($Cn_coll==4) echo "</b>";
+                     //if ($Cn_coll==4) echo "</b>";
                     ?></td>
                     <td align="right">Signatura:</td>
                     <td><?php echo $signatura; ?></td>
@@ -99,9 +99,9 @@
                     <td>Specifikace:</td>
                     <td colspan="3">
                         <?php
-                        if ($Cn_coll==5) echo "<b>";
+                       // if ($Cn_coll==5) echo "<b>";
                         if (isset($collections[4])) echo $collections[4];
-                        if ($Cn_coll==5) echo "</b>";
+                        //if ($Cn_coll==5) echo "</b>";
                         if (isset($result['ca_list_items.preferred_labels'])) echo $result['ca_list_items.preferred_labels']; //TODO VC tohe vypadá rozbitě
                         ?>
                     </td>
@@ -110,6 +110,7 @@
                 <tr>
                     <td>Název předmětu:</td>
                     <td colspan="3">
+                        <b>
                         <?php
                         if (isset($preferovany)) { //TODO tenhle blok je rozbitý
                             echo $preferovany;
@@ -117,6 +118,7 @@
                             echo $nepreferovany;
                         }
                         ?>
+                        </b>
                     </td>
                 </tr>
             </table>
@@ -230,6 +232,8 @@
             if (isset($collections[2]) && $collections[2] == 'dětská kresba') {
                 echo nl2br($result['ca_objects.description']);
             } else {
+
+
                 echo nl2br($result['ca_objects.remark']);
             } ?>
         </td>
