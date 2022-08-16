@@ -28,6 +28,7 @@
 <li><A href="/jmp/Stats/ObjectsPrimaryImageHidden">Objekty, co mají primární reprezentaci skrytou</A></li>
 
 <li><A href="/jmp/Stats/ListItems">Seznamy a položky</a></li>      
+<li><A href="/jmp/Stats/ListItemsGraph">Graf klíčových slov</a></li>   
 <li><A href="/jmp/Stats/ListItemsSex">Seznamy a položky - pohlaví</a></li>      
 
 <li><A href="/jmp/Stats/PlacesCSV">Výpis míst v čr</A></li>

@@ -27,11 +27,13 @@ class StatsController extends ActionController
   # -------------------------------------------------------
 
 
-  private function renderStat($i)
+  private function renderStat($i,$check_privs=true)
   {
+    if($check_privs){
     if (!$this->request->user->canDoAction('jmp_stats')) {
       $this->response->setRedirect($this->request->config->get('error_display_url') . '/n/3000?r=' . urlencode($this->request->getFullUrlPath()));
       return;
+    }
     }
     $this->render('stats' . $i . '.php');
   }
@@ -95,6 +97,12 @@ class StatsController extends ActionController
   function ListItems()
   {
     return $this->renderStat('ListItems');
+  
+  }
+
+  function ListItemsGraph()
+  {
+    return $this->renderStat('ListItemsGraph',false);
   
   }
 
