@@ -84,11 +84,20 @@
                    'returnAllLocales'=>true, //?????
           ),
                     
-          'ca_places' => array(
-              'returnAllLocales'=>true, //?????
+          'ca_places.preferred_labels' => array(
+              ///'returnAllLocales'=>true, //?????
               'returnWithStructure'=>true,
+              'returnAllLocales'=>true
+              //'locale' => 'cs_CZ'
               //'locale_id' => 1
           ),
+          'ca_places' => array(
+            ///'returnAllLocales'=>true, //?????
+            'returnWithStructure'=>true,
+            'returnAllLocales'=>true
+            //'locale' => 'cs_CZ'
+            //'locale_id' => 1
+        ),
           'ca_object_lots' => array(
               'locale' => 'cs_CZ'
           ),
@@ -212,13 +221,24 @@
 
       $placesCreated = [];
       $unsure = false;
+      $placecnt=0;
       foreach ($result['ca_places'] as $place) {
           //var_export($place);
           // jazyk
           if (isset($place['labels'][LANG_CS])) {    // cs
               $label = $place['labels'][LANG_CS];
-          } else if (isset($place['labels'][LANG_EN])) {    // en
-              $label = $place['labels'][LANG_EN];
+          } else if (isset($result['ca_places.preferred_labels'][$placecnt][LANG_CS])){
+                
+             foreach ($result['ca_places.preferred_labels'][$placecnt][LANG_CS] as $placelabel){
+                $label=$placelabel['name'];
+             }
+          }          
+          else if (isset($place['labels'][LANG_EN])) {  
+              $label=$place['labels'][LANG_EN];
+
+            
+
+              
           } else {    // jakýkoli jiný jazyk
             //var_export($place);
             $label="hodnota je divná";
@@ -227,19 +247,16 @@
 
           // typ vztahu
           if ($place['relationship_type_code'] === REL_CREATED) {
-              $placesCreated = [$label];
+              $placesCreated[] = $label;
               $unsure = false;
           } elseif ($place['relationship_type_code'] === REL_CREATED_UNSURE) {
-              $placesCreated[] = $label;
+              $placesCreated[] = $label. ' (?)' ;
               $unsure = true;
           }
+          $placecnt++;
       }
 
-      if (count($placesCreated) === 1 && $unsure) {
-          $placesCreated[0] = $placesCreated[0] . ' (?)';
-      }
-
-      $mistoVzniku = implode(' nebo ', $placesCreated);
+      $mistoVzniku = implode('; ', $placesCreated);
 
       
         
