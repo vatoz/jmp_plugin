@@ -52,6 +52,11 @@ class StatsController extends ActionController
     return $this->renderStat('ElementsRequired');
   }
 
+  function EntitiesTSV()
+  {
+    return $this->renderStat('EntitiesTSV');
+  }
+
   function Fonts()
   {
     return $this->renderStat('Fonts');

@@ -11,6 +11,7 @@
 <li><A href="/jmp/Stats/DRPSObjects?set=1&about=about">Kopie sady objektů do DRPS </A></li>
 
 <li><A href="/jmp/Stats/ElementsRequired">Které elementy jsou vyžadovány??? asi. </a></li>    
+<li><A href="/jmp/Stats/EntitiesTSV">Výpis tsv aktérů ŽMP (omezené) </a></li>    
 
 <li><A href="/jmp/Stats/Fonts">fonty</A></li>
 
