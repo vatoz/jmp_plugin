@@ -190,7 +190,7 @@ $siblings=array();
 
 $SQL="SELECT ca_list_items.*,name_singular FROM `ca_list_items` 
 left join `ca_list_item_labels` on  ca_list_items.item_id = ca_list_item_labels.item_id 
-WHERE `list_id` = '".$variant."' and (`locale_id` = '1' or parent_id is null)";
+WHERE `list_id` = '".$variant."' and (`locale_id` = '1' or parent_id is null) and deleted=0 ";
 $dotaz = $pdo->query($SQL);
 $main=0;
 foreach($dotaz  as $Row){
