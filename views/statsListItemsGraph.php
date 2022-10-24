@@ -21,7 +21,7 @@
     
     
 </style>
-<span class=noprint>Vyberte číselník</br></span>
+<span class=no-print>Vyberte číselník</br></span>
 <?php
 
 //include "setup.php";
@@ -53,9 +53,9 @@ try {
   $dotaz = $pdo->query($SQL);
   foreach($dotaz  as $Row){
     if($Row['list_id']<>$variant){
-      echo '<A class=noprintname href="?variant='.$Row['list_id'].'">'.$Row['name']."</a> ";
+      echo '<A class=no-print href="?variant='.$Row['list_id'].'">'.$Row['name']."</a> ";
     }else{
-      echo '<span class=noprint>'.$Row['name']."</span> ";
+      echo '<span class=no-print>'.$Row['name']."</span> ";
       $title = '<h1>'.$Row['name']."</h1>";
     }
   }
@@ -210,6 +210,6 @@ echo renderElement($main,$data,$siblings);
 
 
 ?>
-<span class=noprint>
-<br><br><br><br></class>
+<span class=no-print>
+<br><br><br><br></span>
 
