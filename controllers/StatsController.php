@@ -44,6 +44,7 @@ class StatsController extends ActionController
   }
   function DRPSObjects()
   {
+       
     return $this->renderStat('DRPSObjects');
   }
  
@@ -59,7 +60,7 @@ class StatsController extends ActionController
 
   function Fonts()
   {
-    return $this->renderStat('Fonts');
+    return $this->renderStat('Fonts',false);
   }
 
   function IdnoSearchRebuild()
@@ -118,12 +119,12 @@ class StatsController extends ActionController
 
   function ObjectsPrimaryImageHidden()
   {
-    return $this->renderStat('ObjectsPrimaryImageHidden');
+    return $this->renderStat('ObjectsPrimaryImageHidden',false);
   }
 
   function PlacesMap()
   {
-    return $this->renderStat('PlacesMap');
+    return $this->renderStat('PlacesMap', false);
   }
   function PlacesCSV()
   {
