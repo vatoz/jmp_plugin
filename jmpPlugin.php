@@ -58,6 +58,12 @@ class jmpPlugin extends BaseApplicationPlugin {
             )
           );*/
           
+		  
+		  $pa_menu_bar["find"]['navigation']['entities']['submenu']['navigation']['victim']=array(
+			  'displayName'=>'Oběti ŽMP (DEMO)',
+			  "default" =>array('module'=>'jmp','controller'=>'Victim','action'=>'Search'),
+			  'is_enabled' => 1);
+			
 
 		  $pa_menu_bar["jmp"]
 		  = array(
@@ -267,8 +273,7 @@ Nefunguje
 				'jmp_stats' => array(
 						'label' => 'Can show statistics for Jewish Museum',
 						'description' => ('User can show custom statistics.')
-					)
-					
+				)	
 			);
 		}
 		# -------------------------------------------------------
