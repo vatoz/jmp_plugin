@@ -1,5 +1,5 @@
-
 <?php 
+
 $dsn = 'mysql:dbname=' . __CA_DB_DATABASE__ . ';host=' .__CA_DB_HOST__ . '';
 $user = __CA_DB_USER__;
 $password = __CA_DB_PASSWORD__;
@@ -12,8 +12,15 @@ try {
     die('Connection failed: ' . $e->getMessage());
 }
 
+/*
+-------------------------------------------------------------------------------------------------------------------------
 
-//return autoincrement integer identifier 
+*/
+
+
+/*return autoincrement integer identifier 
+* pouzivano pro identifikaci prvku, ale asi to nebudu potrebovat
+*/
 function aci(){
     static $aci_int=-1;
     $aci_int++;
@@ -21,53 +28,16 @@ function aci(){
 }
 
 
+/*
+Get human readable place names based on 
+list or sql query
+*/
 function selplaces($SQL){
     return "SELECT place_id,  name FROM `ca_place_labels` WHERE `place_id` IN ("
     .$SQL.
     ") and locale_id=1  order by name";
 }
 
-    $autocompletes=array(
-        'lastplace'=>selplaces("SELECT place_id         FROM `ca_entities_x_places`         WHERE `type_id` = '170'"),
-
-        'tdt'=>"SELECT occurrence_id, name
-        FROM `ca_occurrence_labels`
-        WHERE `locale_id` = '1' AND `name` LIKE '%-> Terezín%'
-        AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
-        
-        ",
-
-        'tnv'=>"SELECT occurrence_id, name
-        FROM `ca_occurrence_labels`
-        WHERE `locale_id` = '1' AND (`name` LIKE '%Terezín ->%' OR `name`  NOT LIKE '%Terezín%')
-        AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
-        
-        ",
-
-        'placedeparture'=> selplaces("SELECT  distinct place_id
-        FROM `ca_places_x_occurrences`
-        WHERE `type_id` = '69' 
-        AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
-        
-        "),
-
-'target'=> selplaces("SELECT  distinct place_id
-FROM `ca_places_x_occurrences`
-WHERE `type_id` = '70' 
-AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
-"), 
-'fate'=>'SELECT item_id,name_singular
-FROM `ca_list_item_labels`
-WHERE `item_id` in (SELECT item_id
-FROM `ca_list_items`
-WHERE `list_id` = 48 AND `parent_id` IS NOT NULL) and locale_id=1'
-        );
-
-
-$f_checkbox=array("onlyone","fuzzyname");
-$f_fuzzy=array();
-$f_text=array("fname","lname","lastplace","deathplace","remark", "reason","placedeparture","departure2place","target","fate","tdt","tnv");
-$f_date=array("born","death","arrival","departure");
 
 
 function fuzzyf($name,$endelement='type="text"' ){
@@ -174,8 +144,8 @@ function chckf($name,$description){
 
 
 //Displays infoicon with hover text
-function info($text){
-    return '<div class="bundleDocumentationLink jmp_info no-print" > <i class="caIcon fa fa-info-circle infoIcon " style="font-size: 15px;"></i>
+function info($text, $css=""){
+    return '<div class="bundleDocumentationLink jmp_info no-print" > <i class="caIcon fa fa-info-circle infoIcon " style="font-size: 15px;'.$css.'"></i>
     <span>'.$text.' </span></div>';
 }
 
@@ -258,153 +228,6 @@ function txtf($name,$description){
 
 
 
-?>
-
-<form>
-    <?php
-
-
-    row(
-        txtf('fname',"Jméno"),
-        txtf('lname',"Příjmení"),
-        chckf('fuzzyname',"Podobná"),
-        info ("ve standartním hledání se automaticky hledá částečná shoda. (dá se to změnit). <br>Při hledání podobných se hledají slova o několik málo záměn jiná. To budeme ladit.")
-    );
-    
-    row(
-        listf('lastplace',"Poslední bydliště", $autocompletes['lastplace']       )
-        ,info("Tady zvažme hledání na celou hierarchii.") //todo
-    );
-
-
-    row(
-        datef('born',"Narozen")
-    );
-
-    row("<div style='background-color:green;'>Řádky výše už fungují</div>", info("A občas i něco níže, co bylo podobné něčemu výše."));
-
-    row(
-        datef('death',"Datum úmrtí")
-    );
-
-    row(
-        txtf('deathplace',"Místo úmrtí"),
-        txtf('reason',"Důvod deportace"),
-        txtf('remark',"Poznámka")
-    );
-
-    row(
-        txtf('regnr',"Registrační číslo v protektorátu"),
-        fuzzyf('regnr')        
-    );
-
-
-    
-            row(
-                listf("tdt","Transport do Terezína", $autocompletes['tdt'])
-            );
-
-
-
-
-            row(
-                txtf('trnr',"číslo v transportu"), fuzzyf('trnr')
-            );
-
-            row(
-                datef('arrival',"datum příjezdu")
-            );
-
-
-            row(
-                listf('placedeparture',"místo odjezdu", $autocompletes['placedeparture'])
-            );
-        
-            row(
-                listf("tnv","Transport na východ", $autocompletes['tnv'])
-            );
-
-
-            row(
-            
-                txtf('tnv_nr',"číslo v transportu"));
-            row(
-                datef('departure',"datum odjezdu")
-            );
-
-            row(
-                listf('departure2place',"místo odjezdu", $autocompletes['departure2place']),    listf('target',"Cíl", $autocompletes['target'])
-            
-            
-            );
-        
-    row(info("Osud, musím zjistit jak se ukládá, nebo co tím bylo myšleno"),
-        listf('fate',"Osud", $autocompletes['fate'])
-    
-    );
-
-    row("<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>",
-        chckf('onlyone',"stačí splnit jednu")
-    
-    );
-
-
-?><div class=row><div>
-<input type=submit>
-</div></div>
-<br><br>
-<?php 
-echo info("čeština pro datepicker, chybějící pole, todo");
-echo info("chceme víc exportů?");
-echo info("jen mající totožné/jen nemající totožné?");
-echo info("u fuzzy inputů nevyplněné");
-
-
-
-
-?>
-
-</form>
-
-<style type="text/css">
-    @media print {
-        .no-print, .no-print * , form{
-            display: none !important;
-        }        
-        #topNavContainer,#footerContainer,#leftNav{display:none;}
-        #mainContent{border-right:none;  padding: 0 0 0 0;  margin-left:0px;  margin-top:0px;  width:100%;}
-        #main{width:100%;  padding: 0 0 0 0;   margin-left:0px; } 
-        /*#tiskovasestava{    break-after: left;  }*/
-        }
-        
-        .row div{
-          float:left;
-          margin-right :1em;
-        }
-        .row{clear:both;padding-top:5px;}
-
-        #mainContent{ width:100%;margin-left:2em;}
-        #main{width:100%;}
-        #leftNav{display:none;       
-        }    
-
-        td{padding-left:5px;}
-        .jmp_info span{display:none;}
-        .jmp_info:hover span{display:block;position:absolute;border:thin solid gray;background-color:white;padding:10px 10px 10px 10px; }
-
-    
-</style>
-
-
-<div id=result>
-
-<h1> Seznam obětí holocaustu</h1>
-<?php
-
-
-
-
-
 
 function find_name($name,$is_first=1, $fuzzy=0){
     global $pdo;
@@ -457,91 +280,6 @@ function find_name($name,$is_first=1, $fuzzy=0){
  return "(0=1)";
 }
 
-//read requests
-$values=array();
-
-foreach($f_checkbox as $field){
-    $values[$field]=isset($_REQUEST[$field]);
-}
-
-//$f_fuzzy=array();
-
-foreach($f_text as $field){
-    $values[$field]=isset($_REQUEST[$field])?$_REQUEST[$field]:"" ;
-}
-
-
-$f_date=array("born","death","arrival","departure");
-
-foreach($f_date as $field){
-    foreach(array($field,  $field."_fuzzy",$field."_fuzzy_val") as $field2){
-        $values[$field2]=isset($_REQUEST[$field2])?$_REQUEST[$field2]:"" ;
-    }
-}
-
-
-//prepare queries
-$limits=array();
-if($values['fname']<>""){
-    $limits[]=find_name($values['fname'],1, $values['fuzzyname'] );
-}
-if($values['lname']<>""){
-    $limits[]=find_name($values['lname'],0, $values['fuzzyname'] );
-}
-
-if($values['lastplace']<>""){
-    $limits['lastplace']= '(ca_entities.entity_id '.($values['lastplace']=='empty'?' NOT':'').' in (
-        SELECT entity_id  FROM `ca_entities_x_places` WHERE `type_id` = 170        '.
-        (intval($values['lastplace'])? ' and place_id = '.intval($values['lastplace']) :"" )
-        .' )  )';
-}
-
-
-foreach(array("tdt","tnv") as $occ){
-    if($values[$occ]<>""){
-        $limits[$occ]= '(ca_entities.entity_id '.($values[$occ]=='empty'?' NOT':'').' in (
-            SELECT entity_id  FROM `ca_entities_x_occurrences` WHERE  1=1         '.
-            (intval($values[$occ])? ' and occurrence_id = '.intval($values[$occ]) :"" )
-            .' )  )';
-    }
-}
-
-
-
-if($values['fate']<>""){ //toto nefunguje todo opravit
-    $limits['fate']= '(ca_entities.entity_id '.($values['fate']=='empty'?' NOT':'').' in (
-        SELECT ca_attributes.row_id
-        FROM `ca_attributes` left join 
-        `ca_attribute_values` on ca_attributes.attribute_id=ca_attribute_values.attribute_id
-        WHERE `table_num` = 20 AND ca_attributes.`element_id` = 189'.
-        (intval($values['fate'])? ' and item_id = '.intval($values['fate']) :"" )
-        .' )  )';
-}
-
-$
-
-
-
-
-$aaautocompletes=array(
-
-
-    'placedeparture'=> selplaces("SELECT  distinct place_id
-    FROM `ca_places_x_occurrences`
-    WHERE `type_id` = '69' 
-    AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
-    
-    "),
-
-'target'=> selplaces("SELECT  distinct place_id
-FROM `ca_places_x_occurrences`
-WHERE `type_id` = '70' 
-AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
-")
-    
-
-
-);
 
 function ymd2decimal($ymd){
     if(preg_match("/^([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$ymd,$matches)){
@@ -550,97 +288,6 @@ function ymd2decimal($ymd){
     }else {return 0;}
 }
 
-
-if(ymd2decimal($values['born'])>0){
-
-    switch ($values['born_fuzzy']){
-        case "exact":
-            $datepart="lft.value_decimal1 = ".ymd2decimal($values['born']);
-            break; 
-        case "bigger":
-            $datepart="lft.value_decimal1 > ".ymd2decimal($values['born']);
-            break; 
-        case "smaller":            
-            $datepart="lft.value_decimal2 < ".ymd2decimal($values['born']);
-            break; 
-        case "interval":
-            $datepart="( lft.value_decimal2 <= ".ymd2decimal($values['born']) . " AND ".
-            "lft.value_decimal >=  ".ymd2decimal($values['born_fuzzy_val'] ). " )";
-            break; 
-
-    }
-    
-    $limits['born']= '(ca_entities.entity_id in (
-
-        select attr.row_id from
-        ca_attribute_values lft
-        left join  ca_attribute_values rght on lft.attribute_id =rght.attribute_id
-        left join ca_attributes attr on  lft.attribute_id =attr.attribute_id 
-        where '.$datepart.'  and lft.element_id=61 and rght.element_id=60 and rght.item_id=102 
-        and attr.table_num=20 and attr.element_id=59
-
-        )
-        )';
-
-
-
-}else{
-    echo info($values['born']);
-
-} 
-
-
-
-
-
-
-//execute query
-if(!count($limits)){
-    $limits['alt'] ="(1=2)";
-}
-
-
-
-$SQL= "SELECT  ca_entities.entity_id , forename,surname,prefix from ca_entities left join ca_entity_labels on  
-ca_entities.entity_id = ca_entity_labels.entity_id
- where deleted=0 and ca_entities.type_id=67 and ca_entity_labels.locale_id=1 and("
-
-.
-implode( $value['onlyone']?" OR \n":" AND \n",$limits) 
-
-.") order by displayname";
-
-foreach($limits as $limit ){
-    echo info ("Použit filtr:<br><pre>".$limit."</pre>");//todo odebrat
-
-}
-    //echo $SQL;
-$dotaz = $pdo->query($SQL);
-
-$cnt=0;
-
-echo '<table >'."\n".'<tr>';
-echo '<td>Příjmení</td>';
-echo '<td>Jméno</td>';
-echo '<td>Titul</td>';
-echo '<td>Narozen</td>';
-echo '<td>Poslední<br>bydliště</td>';
-echo '<td>Trans.<br>do<br>Terez.</td>';
-echo '<td>Číslo(T)</td>';
-echo '<td>Místo<br>odjezdu(T)</td>';
-echo '<td>Datum<br>příjezdu(T)</td>';
-echo '<td>Transport<br>na<br>východ</td>';
-echo '<td>Číslo(V)</td>';
-echo '<td>Místo<br>odjezdu(V)</td>';
-echo '<td>Datum<br>odjezdu(V)</td>';
-echo '<td>Cíl</td>';
-echo '<td>Registrační<br>číslo</td>';
-echo '<td>Důvod<br>deportace</td>';
-echo '<td>Místo<br>úmrtí</td>';
-echo '<td>Datum<br>úmrtí</td>';
-echo '<td>Poznámka</td>';
-echo '<td>Stát</td>';
-echo '</tr>'."\n";
 
 function loadOcc($id){
     $SQL='select * from ca_entities_x_occurrences where entity_id='.$id;
@@ -771,6 +418,419 @@ function loadAtt($id){
     return $data2;
 }
 
+
+
+/*
+---------------------------------------------------------------------
+
+*/
+
+
+    $autocompletes=array(
+        'lastplace'=>selplaces("SELECT place_id         FROM `ca_entities_x_places`         WHERE `type_id` = '170'"),
+        'deathplace'=>selplaces("SELECT place_id         FROM `ca_entities_x_places`         WHERE `type_id` = '37'"),
+
+        'tdt'=>"SELECT occurrence_id, name
+        FROM `ca_occurrence_labels`
+        WHERE `locale_id` = '1' AND `name` LIKE '%-> Terezín%'
+        AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
+        
+        ",
+
+        'tnv'=>"SELECT occurrence_id, name
+        FROM `ca_occurrence_labels`
+        WHERE `locale_id` = '1' AND (`name` LIKE '%Terezín ->%' OR `name`  NOT LIKE '%Terezín%')
+        AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
+        
+        ",
+
+        'placedeparture'=> selplaces("SELECT  distinct place_id
+        FROM `ca_places_x_occurrences`
+        WHERE `type_id` = '69' 
+        AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
+        
+        "),
+
+        'target'=> selplaces("SELECT  distinct place_id
+        FROM `ca_places_x_occurrences`
+        WHERE `type_id` = '70' 
+        AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
+        "), 
+        'fate'=>'SELECT item_id,name_singular
+        FROM `ca_list_item_labels`
+        WHERE `item_id` in (SELECT item_id
+        FROM `ca_list_items`
+        WHERE `list_id` = 48 AND `parent_id` IS NOT NULL) and locale_id=1'
+);
+
+
+$f_checkbox=array("onlyone","fuzzyname");
+$f_fuzzy=array();
+$f_text=array("fname","lname","lastplace","deathplace","remark", "reason","placedeparture","departure2place","target","fate","tdt","tnv");
+$f_date=array("born","death","arrival","departure");
+
+
+
+
+
+
+?>
+
+<form>
+    <?php
+
+
+    row(
+        txtf('fname',"Jméno"),
+        txtf('lname',"Příjmení"),
+        chckf('fuzzyname',"Podobná"),
+        info ("ve standartním hledání se automaticky hledá částečná shoda. (dá se to změnit). <br>Při hledání podobných se hledají slova o několik málo záměn jiná. To budeme ladit.")
+    );
+    
+    row(
+        listf('lastplace',"Poslední bydliště", $autocompletes['lastplace']       )
+        ,info("Tady zvažme hledání na celou hierarchii.","color:teal;") //todo
+    );
+
+
+    row(
+        datef('born',"Narozen")
+    );
+
+    row(
+        datef('death',"Datum úmrtí")
+    );
+ 
+    row(
+        listf('deathplace',"Místo úmrtí", $autocompletes['deathplace'] ),
+        txtf('reason',"Důvod deportace"),        
+        txtf('remark',"Poznámka"),
+        info("kromě libovolných znaků fungují * a NULL","color:green;")
+    );
+
+    row("<div style='background-color:green;'>Řádky výše už fungují</div>", info("A občas i něco níže, co bylo podobné něčemu výše.","color:teal;"));
+
+
+    row(
+        txtf('regnr',"Registrační číslo v protektorátu"),
+        fuzzyf('regnr')        
+    );
+
+
+    
+            row(
+                listf("tdt","Transport do Terezína", $autocompletes['tdt'])
+            );
+
+
+
+
+            row(
+                txtf('trnr',"číslo v transportu"), fuzzyf('trnr')
+            );
+
+            row(
+                datef('arrival',"datum příjezdu")
+            );
+
+
+            row(
+                listf('placedeparture',"místo odjezdu", $autocompletes['placedeparture'])
+            );
+        
+            row(
+                listf("tnv","Transport na východ", $autocompletes['tnv'])
+            );
+
+
+            row(
+            
+                txtf('tnv_nr',"číslo v transportu"));
+            row(
+                datef('departure',"datum odjezdu")
+            );
+
+            row(
+                listf('departure2place',"místo odjezdu", $autocompletes['departure2place']),    listf('target',"Cíl", $autocompletes['target'])
+            
+            
+            );
+        
+    row(info("Osud, musím zjistit jak se ukládá, nebo co tím bylo myšleno","color:teal;"),
+        listf('fate',"Osud", $autocompletes['fate'])
+    
+    );
+
+    row("<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>",
+        chckf('onlyone',"stačí splnit jednu")
+    
+    );
+
+
+?><div class=row><div>
+<input type=submit>
+</div></div>
+<br><br>
+<?php 
+//TODO:
+echo info("chybějící pole, todo","color:teal;");
+echo info("chceme víc exportů?","color:teal;");
+echo info("jen mající totožné/jen nemající totožné?","color:teal;");
+echo info("u fuzzy inputů nevyplněné","color:teal;");
+echo info("vyplnit rozsahy datumů","color:teal;");
+
+
+?>
+
+</form>
+
+<style type="text/css">
+    @media print {
+        .no-print, .no-print * , form{
+            display: none !important;
+        }        
+        #topNavContainer,#footerContainer,#leftNav{display:none;}
+        #mainContent{border-right:none;  padding: 0 0 0 0;  margin-left:0px;  margin-top:0px;  width:100%;}
+        #main{width:100%;  padding: 0 0 0 0;   margin-left:0px; } 
+        /*#tiskovasestava{    break-after: left;  }*/
+        }
+        
+        .row div{
+          float:left;
+          margin-right :1em;
+        }
+        .row{clear:both;padding-top:5px;}
+
+        #mainContent{ width:100%;margin-left:2em;}
+        #main{width:100%;}
+        #leftNav{display:none;       
+        }    
+
+        td{padding-left:5px;}
+        .jmp_info span{display:none;}
+        .jmp_info:hover span{display:block;position:absolute;border:thin solid gray;background-color:white;padding:10px 10px 10px 10px; }
+
+    
+</style>
+
+
+<div id=result>
+
+<h1> Seznam obětí holocaustu</h1>
+<?php
+
+
+
+
+
+
+//read requests
+$values=array();
+
+foreach($f_checkbox as $field){
+    $values[$field]=isset($_REQUEST[$field]);
+}
+
+//$f_fuzzy=array();
+
+foreach($f_text as $field){
+    $values[$field]=isset($_REQUEST[$field])?$_REQUEST[$field]:"" ;
+}
+
+
+$f_date=array("born","death","arrival","departure");
+
+foreach($f_date as $field){
+    foreach(array($field,  $field."_fuzzy",$field."_fuzzy_val") as $field2){
+        $values[$field2]=isset($_REQUEST[$field2])?$_REQUEST[$field2]:"" ;
+    }
+}
+
+
+//prepare queries
+$limits=array();
+if($values['fname']<>""){
+    $limits[]=find_name($values['fname'],1, $values['fuzzyname'] );
+}
+if($values['lname']<>""){
+    $limits[]=find_name($values['lname'],0, $values['fuzzyname'] );
+}
+
+foreach(array(37=>"deathplace",170=>'lastplace') as $type_id=>$name ){
+    if($values[$name]<>""){
+        $limits[$name]= '(ca_entities.entity_id '.($values[$name]=='empty'?' NOT':'').' in (
+            SELECT entity_id  FROM `ca_entities_x_places` WHERE `type_id` = '.$type_id.'      '.
+            (intval($values[$name])? ' and place_id = '.intval($values[$name]) :"" )
+            .' )  )';
+    }
+}
+
+
+foreach(array("tdt","tnv") as $occ){
+    if($values[$occ]<>""){
+        $limits[$occ]= '(ca_entities.entity_id '.($values[$occ]=='empty'?' NOT':'').' in (
+            SELECT entity_id  FROM `ca_entities_x_occurrences` WHERE  1=1         '.
+            (intval($values[$occ])? ' and occurrence_id = '.intval($values[$occ]) :"" )
+            .' )  )';
+    }
+}
+
+
+
+if($values['fate']<>""){ //toto nefunguje todo opravit
+    $limits['fate']= '(ca_entities.entity_id '.($values['fate']=='empty'?' NOT':'').' in (
+        SELECT ca_attributes.row_id
+        FROM `ca_attributes` left join 
+        `ca_attribute_values` on ca_attributes.attribute_id=ca_attribute_values.attribute_id
+        WHERE `table_num` = 20 AND ca_attributes.`element_id` = 189'.
+        (intval($values['fate'])? ' and item_id = '.intval($values['fate']) :"" )
+        .' )  )';
+}
+
+
+
+
+
+
+$aaautocompletes=array(
+
+
+    'placedeparture'=> selplaces("SELECT  distinct place_id
+    FROM `ca_places_x_occurrences`
+    WHERE `type_id` = '69' 
+    AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
+    
+    "),
+
+'target'=> selplaces("SELECT  distinct place_id
+FROM `ca_places_x_occurrences`
+WHERE `type_id` = '70' 
+AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94')
+")
+    
+
+
+);//todo remove, mám to tu jen jako temp text
+
+foreach(array(102=>"born",103=>"death") as $item_id =>$event ) {
+    if(ymd2decimal($values[$event])>0){
+
+        switch ($values[$event.'_fuzzy']){
+            case "exact":
+                $datepart="lft.value_decimal1 = ".ymd2decimal($values[$event]);
+                break; 
+            case "bigger":
+                $datepart="lft.value_decimal1 > ".ymd2decimal($values[$event]);
+                break; 
+            case "smaller":            
+                $datepart="lft.value_decimal2 < ".ymd2decimal($values[$event]);
+                break; 
+            case "interval":
+                $datepart="( lft.value_decimal2 <= ".ymd2decimal($values[$event]) . " AND ".
+                "lft.value_decimal >=  ".ymd2decimal($values[$event.'_fuzzy_val'] ). " )";
+                break; 
+
+        }
+        
+        $limits[$event]= '(ca_entities.entity_id in (
+
+            select attr.row_id from
+            ca_attribute_values lft
+            left join  ca_attribute_values rght on lft.attribute_id =rght.attribute_id
+            left join ca_attributes attr on  lft.attribute_id =attr.attribute_id 
+            where '.$datepart.'  and lft.element_id=61 and rght.element_id=60 and rght.item_id='.$item_id.' 
+            and attr.table_num=20 and attr.element_id=59
+
+            )
+            )';
+    } 
+    }
+
+    //todo přesun důvodu k deportaci do samostatného pole
+    foreach(array(1=>"reason",2=>"remark") as  $element_id => $textual){
+        if($values[$textual]<>""){
+
+
+            
+        $limits[$textual]= '(ca_entities.entity_id '.($values[$textual]=='NULL'?' NOT':'').' in (
+                    SELECT ca_attributes.row_id
+                    FROM `ca_attributes` left join 
+                    `ca_attribute_values` on ca_attributes.attribute_id=ca_attribute_values.attribute_id
+                    WHERE `table_num` = 20 AND ca_attributes.element_id= '.$element_id.' AND value_longtext1 ' .
+                    ($values[$textual]=='NULL'?' IS NOT NULL':
+                        (
+                            $values[$textual]=='*'?' IS NOT NULL':
+                            ' LIKE ' . $pdo->quote("%".$values[$textual]."%")
+                        )                    
+                    )
+                    .
+                    ' ) )';
+            }
+            
+
+
+    }
+
+
+
+
+//execute query
+if(!count($limits)){
+    echo info ("Není filtr, nevypisuji nic.","color:green;");
+    $limits['alt'] ="(1=2)";
+}else {
+    echo info ("Použito filtrů: ".count($limits),"color:green;");
+}
+
+
+
+$SQL= "SELECT  ca_entities.entity_id , forename,surname,prefix from ca_entities left join ca_entity_labels on  
+ca_entities.entity_id = ca_entity_labels.entity_id
+ where deleted=0 and ca_entities.type_id=67 and ca_entity_labels.locale_id=1 and("
+
+.
+implode( $value['onlyone']?" OR \n":" AND \n",$limits) 
+
+.") order by displayname";
+
+foreach($limits as $limit ){
+    echo info ("Použit filtr:<br><pre>".$limit."</pre>","color:red;");//todo odebrat
+
+}
+    //echo $SQL;
+try{    
+$dotaz = $pdo->query($SQL);
+}catch (PDOException $e){
+    echo $SQL."<hr>";
+    die('Main query failed: ' . $e->getMessage());
+}
+
+$cnt=0;
+
+echo '<table >'."\n".'<tr>';
+echo '<td>Příjmení</td>';
+echo '<td>Jméno</td>';
+echo '<td>Titul</td>';
+echo '<td>Narozen</td>';
+echo '<td>Poslední<br>bydliště</td>';
+echo '<td>Trans.<br>do<br>Terez.</td>';
+echo '<td>Číslo(T)</td>';
+echo '<td>Místo<br>odjezdu(T)</td>';
+echo '<td>Datum<br>příjezdu(T)</td>';
+echo '<td>Transport<br>na<br>východ</td>';
+echo '<td>Číslo(V)</td>';
+echo '<td>Místo<br>odjezdu(V)</td>';
+echo '<td>Datum<br>odjezdu(V)</td>';
+echo '<td>Cíl</td>';
+echo '<td>Registrační<br>číslo</td>';
+echo '<td>Důvod<br>deportace</td>';
+echo '<td>Místo<br>úmrtí</td>';
+echo '<td>Datum<br>úmrtí</td>';
+echo '<td>Poznámka</td>';
+echo '<td>Stát</td>';
+echo '</tr>'."\n";
+
+
 foreach($dotaz  as $Row){
 $data=loadAtt($Row['entity_id']);
 $data2=loadOcc($Row['entity_id']);
@@ -782,27 +842,27 @@ $data2=loadOcc($Row['entity_id']);
     echo '<td>'.$Row['prefix'].'</td>';
     echo '<td>'.$data['born'] .'</td>';
     echo '<td>'.$data['lastplace'] .'</td>';
+
     echo '<td>'.$data2['t']['code'].'</td>';
     echo '<td>'.$data2['t']['tnum'].'</td>';
     echo '<td>'.$data2['t']['start'].'</td>';
     echo '<td>'.$data2['t']['date'].'</td>';
+
     echo '<td>'.$data2['v']['code'].'</td>';
     echo '<td>'.$data2['v']['tnum'].'</td>';
     echo '<td>'.$data2['v']['start'].'</td>';
     echo '<td>'.$data2['v']['date'].'</td>';
     echo '<td>'.$data2['v']['cil'].'</td>';
-
     
     echo '<td>'.$data['regnr']. '</td>';
+
     echo '<td>'.$data['description']. '</td>';
     echo '<td>'.$data['deathplace'] .'</td>';
-    echo '<td>' .$data['death'] .'</td>';
+    echo '<td>'.$data['death'] .'</td>';
     echo '<td>'.$data['remark']. '</td>';
     echo '<td>Stát</td>';
     echo '</tr>'."\n";
     
-    
-
     $cnt++;
 }
 echo '</table>'."\n";
