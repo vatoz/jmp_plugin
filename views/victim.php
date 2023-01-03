@@ -747,7 +747,7 @@ foreach(array(102=>"born",103=>"death") as $item_id =>$event ) {
     } 
     }
 
-    //var_export($values);
+    echo info(var_export($values,true));
     foreach(array(4212=>"regnr") as $item_id =>$value ) {
         if(intval($values[$value])>0){
 
@@ -830,9 +830,11 @@ ca_entities.entity_id = ca_entity_labels.entity_id
  where deleted=0 and ca_entities.type_id=67 and ca_entity_labels.locale_id=1 and("
 
 .
-implode( $value['onlyone']?" OR \n":" AND \n",$limits) 
+implode( $values['onlyone']?" OR \n":" AND \n",$limits) 
 
 .") order by displayname";
+//echo info($SQL);
+//echo info($values['onlyone']==true?" OR \n":" AND \n");
 
 foreach($limits as $limit ){
     echo info ("Použit filtr:<br><pre>".$limit."</pre>","color:red;");//todo odebrat
