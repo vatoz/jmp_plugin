@@ -64,7 +64,7 @@ function fuzzyf($name,$endelement='type="text"' ){
 </div>
 <div>
     <label for="'.$name.'_fuzzy">Interval:</label><br>
-    <input type="radio" id="'.$name.'_fuzzy_interval" name="'.$name.'_fuzzy" value="interval">';
+    <input type="radio" id="'.$name.'_fuzzy_interval" name="'.$name.'_fuzzy" value="interval"  '.($candidate=='interval'?'checked':'').' >';
     
     $candidate="";
     if(isset($_REQUEST[$name.'_fuzzy_val'])){
@@ -508,14 +508,14 @@ $f_date=array("born","death","arrival","departure");
         info("kromě libovolných znaků fungují * a NULL","color:green;")
     );
 
-    row("<div style='background-color:green;'>Řádky výše už fungují</div>", info("A občas i něco níže, co bylo podobné něčemu výše.","color:teal;"));
-
+    
 
     row(
         txtf('regnr',"Registrační číslo v protektorátu"),
         fuzzyf('regnr')        
     );
 
+    row("<div style='background-color:green;'>Řádky výše už fungují</div>", info("A občas i něco níže, co bylo podobné něčemu výše.","color:teal;"));
 
     
             row(
@@ -573,11 +573,12 @@ $f_date=array("born","death","arrival","departure");
 <br><br>
 <?php 
 //TODO:
-echo info("chybějící pole, todo","color:teal;");
-echo info("chceme víc exportů?","color:teal;");
-echo info("jen mající totožné/jen nemající totožné?","color:teal;");
-echo info("u fuzzy inputů nevyplněné","color:teal;");
-echo info("vyplnit rozsahy datumů","color:teal;");
+row(
+     info("chybějící pole, todo","color:teal;"),
+ info("chceme víc exportů?","color:teal;"),
+ info("jen mající totožné/jen nemající totožné?","color:teal;"),
+ info("u fuzzy inputů nevyplněné","color:teal;"),
+ info("vyplnit rozsahy datumů","color:teal;"));
 
 
 ?>
@@ -638,7 +639,7 @@ foreach($f_text as $field){
 }
 
 
-$f_date=array("born","death","arrival","departure");
+$f_date=array("born","death","arrival","departure","regnr");
 
 foreach($f_date as $field){
     foreach(array($field,  $field."_fuzzy",$field."_fuzzy_val") as $field2){
@@ -745,6 +746,46 @@ foreach(array(102=>"born",103=>"death") as $item_id =>$event ) {
             )';
     } 
     }
+
+    //var_export($values);
+    foreach(array(4212=>"regnr") as $item_id =>$value ) {
+        if(intval($values[$value])>0){
+
+    
+            switch ($values[$value.'_fuzzy']){
+                case "exact":
+                    $datepart="lft.value_longtext1 = ".intval($values[$value]);
+                    break; 
+                case "bigger":
+                    $datepart="CAST(lft.value_longtext1 AS UNSIGNED) > ".intval($values[$value]);
+                    break; 
+                case "smaller":            
+                    $datepart="CAST(lft.value_longtext1 AS UNSIGNED) < ".intval($values[$value]);
+                    break; 
+                case "interval":
+                    $datepart="( CAST(lft.value_longtext1 AS UNSIGNED) >=  ".intval($values[$value]) . " AND  CAST(lft.value_longtext1 AS UNSIGNED) <=  ".
+                    intval($values[$value.'_fuzzy_val'] ). " )";
+                    break; 
+    
+    
+            }
+            
+            $limits[$value]= '(ca_entities.entity_id in (
+    
+                select attr.row_id from
+                ca_attribute_values lft
+                left join  ca_attribute_values rght on lft.attribute_id =rght.attribute_id
+                left join ca_attributes attr on  lft.attribute_id =attr.attribute_id 
+                where '.$datepart.'  and lft.element_id= 300 and rght.element_id=299 and rght.item_id='.$item_id.' 
+                and attr.table_num=20 and attr.element_id=298
+    
+                )
+                )';
+        } 
+        }
+
+
+
 
     //todo přesun důvodu k deportaci do samostatného pole
     foreach(array(1=>"reason",2=>"remark") as  $element_id => $textual){
