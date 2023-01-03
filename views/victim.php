@@ -158,7 +158,7 @@ display select with some needed variants
 @return string
 
 */
-function listf($name,$description,$SQLvariants){
+function listf($name,$description,$SQLvariants, $disableEmptyFull=false){
 
     $candidate="";
     if(isset($_REQUEST[$name])){
@@ -170,9 +170,10 @@ function listf($name,$description,$SQLvariants){
     <label  id="label_'.$name.'" for="'.$name.'">'.$description.'</label><br>
     <select   id="'.$name.'" name="'.$name.'" >';
     $val.= '<option value=""></option>';
-    $val.= '<option value="empty"'.('empty'==$candidate?' selected':'') .' >(prázdné)</option>';
-    $val.= '<option value="full"'.('full'==$candidate?' selected':'') .'>(vyplněné)</option>';
-    
+    if(!$disableEmptyFull){
+        $val.= '<option value="empty"'.('empty'==$candidate?' selected':'') .' >(prázdné)</option>';
+        $val.= '<option value="full"'.('full'==$candidate?' selected':'') .'>(vyplněné)</option>';
+    }
 
     global $pdo;
 
@@ -515,12 +516,13 @@ $f_date=array("born","death","arrival","departure");
         fuzzyf('regnr')        
     );
 
-    row("<div style='background-color:green;'>Řádky výše už fungují</div>", info("A občas i něco níže, co bylo podobné něčemu výše.","color:teal;"));
-
+    
     
             row(
-                listf("tdt","Transport do Terezína", $autocompletes['tdt'])
-            );
+                listf("tdt","Transport do Terezína", $autocompletes['tdt'],true)
+            ); //TODO nefunguje "vyplněný, a prázdný)
+
+            row("<div style='background-color:green;'>Řádky výše už fungují</div>", info("A občas i něco níže, co bylo podobné něčemu výše.","color:teal;"));
 
 
 
@@ -539,7 +541,7 @@ $f_date=array("born","death","arrival","departure");
             );
         
             row(
-                listf("tnv","Transport na východ", $autocompletes['tnv'])
+                listf("tnv","Transport na východ", $autocompletes['tnv'], true)
             );
 
 
@@ -607,9 +609,17 @@ row(
         #leftNav{display:none;       
         }    
 
-        td{padding-left:5px;}
+        td{padding-left:5px;border:thin solid lightgray}
         .jmp_info span{display:none;}
         .jmp_info:hover span{display:block;position:absolute;border:thin solid gray;background-color:white;padding:10px 10px 10px 10px; }
+        
+        thead tr  th {            
+            top: 55px;
+            position: sticky;
+            z-index: 9999;
+            background-color:rgba(255,255,255,0.4);
+        }
+
 
     
 </style>
@@ -850,28 +860,28 @@ $dotaz = $pdo->query($SQL);
 
 $cnt=0;
 
-echo '<table >'."\n".'<tr>';
-echo '<td>Příjmení</td>';
-echo '<td>Jméno</td>';
-echo '<td>Titul</td>';
-echo '<td>Narozen</td>';
-echo '<td>Poslední<br>bydliště</td>';
-echo '<td>Trans.<br>do<br>Terez.</td>';
-echo '<td>Číslo(T)</td>';
-echo '<td>Místo<br>odjezdu(T)</td>';
-echo '<td>Datum<br>příjezdu(T)</td>';
-echo '<td>Transport<br>na<br>východ</td>';
-echo '<td>Číslo(V)</td>';
-echo '<td>Místo<br>odjezdu(V)</td>';
-echo '<td>Datum<br>odjezdu(V)</td>';
-echo '<td>Cíl</td>';
-echo '<td>Registrační<br>číslo</td>';
-echo '<td>Důvod<br>deportace</td>';
-echo '<td>Místo<br>úmrtí</td>';
-echo '<td>Datum<br>úmrtí</td>';
-echo '<td>Poznámka</td>';
-echo '<td>Stát</td>';
-echo '</tr>'."\n";
+echo '<table >'."\n".'<thead><tr>';
+echo '<th>Příjmení</th>';
+echo '<th>Jméno</th>';
+echo '<th>Titul</th>';
+echo '<th>Narozen</th>';
+echo '<th>Poslední<br>bydliště</th>';
+echo '<th>Trans.<br>do<br>Terez.</th>';
+echo '<th>Číslo(T)</th>';
+echo '<th>Místo<br>odjezdu(T)</th>';
+echo '<th>Datum<br>příjezdu(T)</th>';
+echo '<th>Transport<br>na<br>východ</th>';
+echo '<th>Číslo(V)</th>';
+echo '<th>Místo<br>odjezdu(V)</th>';
+echo '<th>Datum<br>odjezdu(V)</th>';
+echo '<th>Cíl</th>';
+echo '<th>Registrační<br>číslo</th>';
+echo '<th>Důvod<br>deportace</th>';
+echo '<th>Místo<br>úmrtí</th>';
+echo '<th>Datum<br>úmrtí</th>';
+echo '<th>Poznámka</th>';
+echo '<th>Stát</th>';
+echo '</tr></thead><tbody>'."\n";
 
 
 foreach($dotaz  as $Row){
@@ -908,7 +918,7 @@ $data2=loadOcc($Row['entity_id']);
     
     $cnt++;
 }
-echo '</table>'."\n";
+echo '</tbody></table>'."\n";
 //display reuslts
 echo "<hr>Celkem ve výpisu: ".$cnt;
 
