@@ -33,7 +33,7 @@ function showdata($Verze){
   } catch (PDOException $e) {
       die('Connection failed: ' . $e->getMessage());
   }
-$Years=array(2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022);
+$Years=array(2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023);
 
 echo "<table border=1 id=ttt_".$Verze." >";
 echo "<tr>";
@@ -51,10 +51,11 @@ foreach($dotaz_typ  as $Typ){
 	
 	switch($Verze){
 		case 1:
-		$Query="SELECT count(distinct ca_objects.object_id) as digits, YEAR(FROM_UNIXTIME(log_datetime)) as representation_creation FROM ca_objects inner join ca_objects_x_object_representations on  ca_objects.object_id = ca_objects_x_object_representations.object_id	
-		inner join `ca_change_log` on representation_id=logged_row_id  where  logged_table_num =56 and changetype = 'I'  
-		and type_id = 
-		".$Typ['item_id']." group by representation_creation";
+		$Query="SELECT count(distinct ca_objects.object_id) as digits, YEAR(FROM_UNIXTIME(log_datetime)) as representation_creation FROM ca_objects left join ca_objects_x_object_representations on  ca_objects.object_id = ca_objects_x_object_representations.object_id	
+		left  join `ca_change_log` on (representation_id=logged_row_id  and  logged_table_num =56 and changetype = 'I' )
+		where 
+		 type_id = 
+		".$Typ['item_id']." group by representation_creation HAVING representation_creation  is not null";
 		
 	
 	
@@ -62,10 +63,10 @@ foreach($dotaz_typ  as $Typ){
 		break;
 		case 2:
 		//tahle query je v pořádku
-		$Query="SELECT count(*) as digits, YEAR(FROM_UNIXTIME(log_datetime)) as representation_creation FROM ca_objects inner join ca_objects_x_object_representations on  ca_objects.object_id = ca_objects_x_object_representations.object_id	
-		inner join `ca_change_log` on representation_id=logged_row_id  where  logged_table_num =56 and changetype = 'I'  
-		and type_id = 
-		".$Typ['item_id']." group by representation_creation";
+		$Query="SELECT count(*) as digits, YEAR(FROM_UNIXTIME(log_datetime)) as representation_creation FROM ca_objects left join ca_objects_x_object_representations on  ca_objects.object_id = ca_objects_x_object_representations.object_id	
+		left join `ca_change_log` on (representation_id=logged_row_id  and  logged_table_num =56 and changetype = 'I'  )
+		where type_id = 
+		".$Typ['item_id']." group by representation_creation having  representation_creation is not null";
 		
 		
 		break;
@@ -75,6 +76,7 @@ foreach($dotaz_typ  as $Typ){
 	
 	$yc=$Years;
 	$dotaz_data = $pdo->query($Query);
+	
 	$rok=array_shift($yc);
 	
 	foreach($dotaz_data as $Data){
