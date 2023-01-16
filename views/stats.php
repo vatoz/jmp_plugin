@@ -17,7 +17,6 @@
 
 <li><A href="/jmp/Stats/IdnoRegexp">regexp idno </a></li>    
 <li><A href="/jmp/Stats/IdnoSearchRebuild">REindexace idno</A></li>
-
 <li><A href="/jmp/Stats/IdnoSequences">Test na duplicitní idno</A></li>
 
 <li><A href="/jmp/Stats/ImagesImport">Kolik bylo kdy naimportováno reprezentací </a></li>    

@@ -528,8 +528,8 @@ foreach(array("tdt","tnv") as $key ){ // evaluate $keys_tdt,$keys_tnv
         fuzzyf('regnr')        
     );
 
-    
-    
+    echo "<div class=t1>";
+     
             row(
                 listf("tdt","Transport do Terezína", $autocompletes['tdt'])
             ); //TODO nefunguje "vyplněný, a prázdný)
@@ -547,7 +547,7 @@ foreach(array("tdt","tnv") as $key ){ // evaluate $keys_tdt,$keys_tnv
             row(
                 listf('placedeparture',"místo odjezdu",str_replace ("(1=1)","(occurrence_id in (".$keys_tdt. "))"  , $autocompletes['placedeparture']))
             );
-        
+            echo "</div><div class=t2>";
             row(
                 listf("tnv","Transport na východ", $autocompletes['tnv'])
             );
@@ -573,7 +573,8 @@ foreach(array("tdt","tnv") as $key ){ // evaluate $keys_tdt,$keys_tnv
             
             
             );
-            
+            echo "</div>";
+
             row("<div style='background-color:green;'>Řádky výše už fungují</div>", info("A občas i něco níže, co bylo podobné něčemu výše.","color:teal;"));
 
 
@@ -619,9 +620,15 @@ row(
         /*#tiskovasestava{    break-after: left;  }*/
         }
         
+        .t1{clear:left;padding-right:36px}
+        .t1,.t2{
+          float:left; margin-right :2em; border:thin solid #f0f0f0;
+        }
         .row div{
           float:left;
-          margin-right :1em;
+          margin-right :1.5em;
+          margin-bottom:3px;
+
         }
         .row{clear:both;padding-top:5px;}
 

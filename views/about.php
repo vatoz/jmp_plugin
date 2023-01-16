@@ -1,6 +1,9 @@
 <?php ?>
 <h1>Co je v této verzi</h1>
 
+<h2>Vyhledávání obětí ŽMP</h2>
+<p>Vyhledávání inspirované/okopírované ze staré aplikace Oběti </p> 
+
 
 
 <h2>Překlad</h2>
