@@ -82,7 +82,7 @@ foreach($sids as $id){
       
     }
 
-    $ids_e=implode(", ", $ids );
+    $ids_e=implode(", ", array_values( $ids) );
     $data[$rep][]= "INSERT INTO `victim_images` ( `preview`, `small`, `medium`, `large`, `type`, `victim_id`, `object_id`, `idno`, `about`) SELECT '".$p['preview']."','".$p['small']."','".$p['medium']."','".$p['large']."',2, id, ".$id.", null,".$about." FROM victim where entity_id in(".$ids_e.") or id_external  in(".$ids_e.");"."<br>/*".$m[$Row1["representation_id"]]['tags']['preview']."*/<br><br>";
   }
 
