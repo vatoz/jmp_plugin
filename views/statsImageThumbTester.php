@@ -42,11 +42,12 @@ $from=bigintval($_REQUEST["from"]);
 
     )
   
-  order by representation_id ASC LIMIT 99 ";
+  order by representation_id ASC LIMIT 999 ";
   error_log( $SQL);
   $cnt=0;
   $dotaz = $pdo->query($SQL);
   $nok=array();
+  $thnok=array();
   
   foreach($dotaz  as $Row){
     $i=$Row["representation_id"];
@@ -55,7 +56,12 @@ $from=bigintval($_REQUEST["from"]);
     $t_media = new ca_object_representations($i);
     $vs_fldname = 'media';
     $va_tilepic_info = $t_media->getMediaInfo($vs_fldname, 'tilepic');
-    
+    $va_thumbnail_info = $t_media->getMediaInfo($vs_fldname, 'thumbnail');
+
+    if(isset($va_thumbnail_info['QUEUED'])){
+      $thnok[]=$i;
+      echo "thnok";
+    }
 	if(is_null($va_tilepic_info)){        
         $nok[]=$i;
         echo "X";
@@ -78,9 +84,19 @@ $from=bigintval($_REQUEST["from"]);
 
 
   }
+  if(count($thnok)){
+    foreach ($thnok as $p){
+        echo "su -s /bin/sh www-data -c 'php support/bin/caUtils reprocess-media -i ". $p."'"."<br>";
+        file_put_contents("errorsfound_thumb.txt", "su -s /bin/sh www-data -c 'php support/bin/caUtils reprocess-media  -i ". $p."'\n", FILE_APPEND | LOCK_EX);
+
+    }
 
 
-  echo '<br><a id=automat href="/index.php/jmp/Stats/ThumbTester?from='.$i.'">Další</a> ';
+  }
+
+
+
+  echo '<br><a id=automat href="/index.php/jmp/Stats/ImageThumbTester?from='.$i.'">Další</a> ';
 
   if($cnt ){
      echo "<script>document.getElementById('automat').click(); </script>";
