@@ -190,6 +190,26 @@ function listf($name,$description,$SQLvariants, $disableEmptyFull=false){
     return $val;
 }
 
+function listFate($name,$description){
+
+    $candidate="";
+    if(isset($_REQUEST[$name])){
+        $candidate=$_REQUEST[$name];
+    }
+
+    $val= '
+    <div>
+    <label  id="label_'.$name.'" for="'.$name.'">'.$description.'</label><br>
+    <select   id="'.$name.'" name="'.$name.'" >';
+    $val.= '<option value="">Oběti (ŽMP)</option>';
+    $val.= '<option value="iti"'.('iti'==$candidate?' selected':'') .' >ITI</option>';
+    $val.= '<option value="full"'.('full'==$candidate?' selected':'') .'>vše bez deduplikace</option>';
+  
+    $val.='</select></div>'."\n";
+
+    return $val;
+}
+
 
 function date_el_f($name,$description, $min,$max){
     $candidate="";
@@ -227,6 +247,48 @@ function txtf($name,$description){
     
 }
 
+function name_normalize($name){
+    
+    $name=trim($name); //ignoruji mezery na zacatku a konci
+    //odebrat diakritiku
+    //https://stackoverflow.com/questions/1017599/how-do-i-remove-accents-from-characters-in-a-php-string
+    $transliterator = Transliterator::createFromRules(':: Any-Latin; :: Latin-ASCII; :: NFD; :: [:Nonspacing Mark:] Remove; :: Lower(); :: NFC;', Transliterator::FORWARD);
+    $name = $transliterator->transliterate($name);
+
+
+    
+     $flag=true;
+    $start=0;
+
+    while($flag){
+        if(substr($name,$start,1)==substr($name,$start+1,1)){
+           $name=substr($name,0,$start+1).($start+2<strlen($name)? substr($name,$start+2,1000):"");
+        }else{
+            $start++;
+        }
+        if($start==strlen($name)-1) $flag=false;
+    }
+    
+    $name=str_replace("y","i",$name);
+    $name=str_replace("w","v",$name);
+    $name=str_replace("th","t",$name);
+    $name=str_replace("sh","s",$name);
+    $name=str_replace("sch","s",$name);
+    $name=str_replace("cz","c",$name);
+    $name=str_replace("cs","c",$name);
+    $name=str_replace("ts","c",$name);
+    $name=str_replace("tz","c",$name);
+    $name=str_replace("oe","o",$name);
+    $name=str_replace("ae","a",$name);
+    $name=str_replace("ue","u",$name);
+    $name=str_replace("ph","f",$name);
+    $name=str_replace("ai","aj",$name);
+    $name=str_replace("ei","aj",$name);
+
+    if(substr($name,-2)=="ah") $name=substr($name,0,strlen($name)-1);
+
+    return $name;
+}
 
 
 
@@ -238,16 +300,16 @@ function find_name($name,$is_first=1, $fuzzy=0){
     where entity_id in (SELECT entity_id
     FROM `ca_entities`
     WHERE `type_id` = '67' AND `deleted` = '0')
-    ";
+    ";  //mozna to type_id pujde pryc?
 
     if(!$fuzzy){
         if(!$is_first){
-            $SQL.= "AND surname like ". $pdo->quote("%".$name."%");
+            $SQL.= "AND surname like ". $pdo->quote($name);
         }else{
             $SQL.= "AND ( ".                        
-             "forename like ". $pdo->quote("%".$name."%") .
-             " or other_forenames like ". $pdo->quote("%".$name."%") .
-             "or middlename like ". $pdo->quote("%".$name."%") . 
+             "forename like ". $pdo->quote($name) .
+             " or other_forenames like ". $pdo->quote($name) .
+             "or middlename like ". $pdo->quote($name) . 
              ")";             
         }
         return "( ca_entities.entity_id  in (".$SQL. ") )";
@@ -258,6 +320,8 @@ function find_name($name,$is_first=1, $fuzzy=0){
       
     $dotaz = $pdo->query($SQL);
     $ok=array();
+
+    $name=name_normalize($name);
     
     foreach($dotaz  as $Row){
         if(!$fuzzy){
@@ -265,7 +329,7 @@ function find_name($name,$is_first=1, $fuzzy=0){
         }else{
             foreach(($is_first? array("forename", "other_forenames", "middlename"):array("surname")) as $type){
                 if($Row[$type]<>""){
-                    if(levenshtein($Row[$type],$name)<3){
+                    if( name_normalize($Row[$type])==$name){//name uz je normalizovane
                         $ok[]=$Row['entity_id'];
                     }                    
                 }
@@ -345,6 +409,34 @@ function attSQL($rowid,$tablenum, $elementsCSV){
     return $SQL;
 }
 
+function loadEntXEnt($id){
+    $SQL='select distinct type_id from  ca_entities_x_entities where entity_left_id ='. $id .' or entity_right_id= '.$id.' '  ;
+    
+    global $pdo;
+    $dotaz=$pdo->query($SQL);
+    $data=['identical'=>false,'family'=>false];
+    
+    foreach($dotaz  as $Row){
+        switch ($Row['type_id']){
+            case 96:
+                $data['identical' ]=true;
+                break;
+            case 31:
+            case 32:
+            case 33:
+            case 34:
+            case 1000:
+                $data['family' ]=true;
+                break;
+                
+
+
+        }
+    }
+
+    return $data;
+}
+
 function loadAttOcc($id){
     $SQL=attSQL($id,67,'95,162');
     
@@ -419,6 +511,30 @@ function loadAtt($id){
     return $data2;
 }
 
+function loadLimitEntities(int $root_id,bool $identical){
+    $candidates=[$root_id];
+    $found=[];
+    global $pdo;
+    while(count($candidates)){
+        $id=array_pop($candidates);
+        $SQL='SELECT *  from ca_entities_x_entities where ( entity_left_id ='. $id .' or entity_right_id= '.$id.') and type_id in ' . 
+            ($identical? '(96)':'(31,32,33,34,1000)');
+        $dotaz=$pdo->query($SQL);
+        foreach($dotaz as $Row){
+            if($Row['entity_left_id']==$id){
+                $r=$Row['entity_right_id'];
+            }else{
+                $r=$Row['entity_left_id'];
+            }
+            if (!in_array($r,$found)){
+                $candidates[]=$r;
+                $found[]=$r;
+            }
+        }
+    }
+    return $found;
+}
+
 
 
 /*
@@ -457,13 +573,8 @@ function loadAtt($id){
         FROM `ca_places_x_occurrences`
         WHERE `type_id` = '70' 
         AND occurrence_id in (SELECT occurrence_id FROM `ca_occurrences` WHERE `type_id` = '94' and (1=1) )
-        "), 
+        ")
 
-        'fate'=>'SELECT item_id,name_singular
-        FROM `ca_list_item_labels`
-        WHERE `item_id` in (SELECT item_id
-        FROM `ca_list_items`
-        WHERE `list_id` = 48 AND `parent_id` IS NOT NULL) and locale_id=1'
 );
 
 
@@ -502,7 +613,6 @@ foreach(array("tdt","tnv") as $key ){ // evaluate $keys_tdt,$keys_tnv
     
     row(
         listf('lastplace',"Poslední bydliště", $autocompletes['lastplace']       )
-        ,info("Tady zvažme hledání na celou hierarchii.","color:teal;") //todo
     );
 
 
@@ -579,8 +689,9 @@ foreach(array("tdt","tnv") as $key ){ // evaluate $keys_tdt,$keys_tnv
 
 
         
-    row(info("Osud, musím zjistit jak se ukládá, nebo co tím bylo myšleno","color:teal;"),
-        listf('fate',"Osud", $autocompletes['fate'])
+    row(
+
+        listFate('fate',"Osud")
     
     );
 
@@ -597,11 +708,15 @@ foreach(array("tdt","tnv") as $key ){ // evaluate $keys_tdt,$keys_tnv
 <?php 
 //TODO:
 row(
- info("chybějící pole, todo","color:teal;"),
- info("chceme víc exportů?","color:teal;"),
- info("jen mající totožné/jen nemající totožné?","color:teal;"),
- info("u fuzzy inputů nevyplněné","color:teal;"),
- info("vyplnit rozsahy datumů","color:teal;")
+ info("vyplnit rozsahy datumů","color:teal;"),
+ info("chci mít v 'osudu' vybrat obětižmp/iti/přeživší - person.jmp","color:teal;"),
+ info("Příjmení a jméno standartně jen přesně, rozšířené dle nápovědy obětí"),
+ info ("stát odebrat, možná přidat typ aktéra"),
+ info("datum zobrazovat d.m.yyyy"),
+ info("hlavičky sloupců i anglicky"), 
+ info("zobrazit identické aktéry"),
+ info("zobrazit příbuzné aktéry - příbuzný, détě, manžel apod"),
+
 );
 
 ?>
@@ -650,8 +765,11 @@ row(
         }
    
 
-        td a{opacity: 0.2;}
-        td:hover a{opacity:1;}
+        td a,td span{opacity: 0.2;}
+        td:hover a,td:hover span{opacity:1;}
+        div.counter{
+            position:fixed; bottom:0px;  left:0px; z-index:100;            
+        }
 </style>
 
 <div id=result>
@@ -679,6 +797,10 @@ foreach($f_date as $field){
     foreach(array($field,  $field."_fuzzy",$field."_fuzzy_val") as $field2){
         $values[$field2]=isset($_REQUEST[$field2])?$_REQUEST[$field2]:"" ;
     }
+}
+
+foreach(['identical','family'] as $field){
+    $values[$field]=isset($_REQUEST[$field])?$_REQUEST[$field]:"0" ;
 }
 
 
@@ -755,16 +877,24 @@ foreach(array("trnr"=>"tdt","tnv_nr"=>"tnv") as $nrfiltr=>$occ){
 }
 
 
+global $fate;
+switch($values['fate']){
+    case "":
+        $fate='(67)' ;
+        break;
+    case "iti":
+        $fate= '(66)';
+        break;
+    case "full":
+        $fate='(66,67,63)';
 
-if($values['fate']<>""){ //toto nefunguje todo opravit
-    $limits['fate']= '(ca_entities.entity_id '.($values['fate']=='empty'?' NOT':'').' in (
-        SELECT ca_attributes.row_id
-        FROM `ca_attributes` left join 
-        `ca_attribute_values` on ca_attributes.attribute_id=ca_attribute_values.attribute_id
-        WHERE `table_num` = 20 AND ca_attributes.`element_id` = 189'.
-        (intval($values['fate'])? ' and item_id = '.intval($values['fate']) :"" )
-        .' )  )';
+        break;
+    default: 
+        $fate='(67)';
 }
+
+
+
 
 
 
@@ -786,8 +916,8 @@ foreach(array(102=>"born",103=>"death") as $item_id =>$event ) {
                 $datepart="lft.value_decimal2 < ".ymd2decimal($values[$event]);
                 break; 
             case "interval":
-                $datepart="( lft.value_decimal1 <= ".ymd2decimal($values[$event]) . " AND ".
-                "lft.value_decimal1 >=  ".ymd2decimal($values[$event.'_fuzzy_val'] ). " )";
+                $datepart="( lft.value_decimal1 >= ".ymd2decimal($values[$event]) . " AND ".
+                "lft.value_decimal1 <=  ".ymd2decimal($values[$event.'_fuzzy_val'] ). " )";
                 break; 
 
         }
@@ -837,7 +967,7 @@ foreach(array(102=>"born",103=>"death") as $item_id =>$event ) {
                 left join  ca_attribute_values lft on (   lft.attribute_id =attr.attribute_id )
                               
                 where '.$datepart.'   AND occurrence_id in('.$$resultname.')
-                
+    arturia
     
                 )
                 )';
@@ -845,8 +975,6 @@ foreach(array(102=>"born",103=>"death") as $item_id =>$event ) {
         }
 
 
-
-    
     foreach(array(4212=>"regnr") as $item_id =>$value ) {
         if(intval($values[$value])>0){
 
@@ -864,9 +992,7 @@ foreach(array(102=>"born",103=>"death") as $item_id =>$event ) {
                 case "interval":
                     $datepart="( CAST(lft.value_longtext1 AS UNSIGNED) >=  ".intval($values[$value]) . " AND  CAST(lft.value_longtext1 AS UNSIGNED) <=  ".
                     intval($values[$value.'_fuzzy_val'] ). " )";
-                    break; 
-    
-    
+                    break;     
             }
             
             $limits[$value]= '(ca_entities.entity_id in (
@@ -889,8 +1015,6 @@ foreach(array(102=>"born",103=>"death") as $item_id =>$event ) {
     //todo přesun důvodu k deportaci do samostatného pole
     foreach(array(1=>"reason",2=>"remark") as  $element_id => $textual){
         if($values[$textual]<>""){
-
-
             
         $limits[$textual]= '(ca_entities.entity_id '.($values[$textual]=='NULL'?' NOT':'').' in (
                     SELECT ca_attributes.row_id
@@ -946,6 +1070,17 @@ foreach(array(102=>"born",103=>"death") as $item_id =>$event ) {
 
     }
     
+    foreach(['identical','family'] as $field)
+    if(intval($values[$field])>0){  
+        $limits=array();//reset filters
+        $limits[]=
+        '(ca_entities.entity_id  IN ('.implode(",",loadLimitEntities( 
+            intval($values[$field]),$field=='identical') ) .' ) )';
+        $fate='(66,67,63)';
+    }
+    
+
+
 
 
 //execute query
@@ -960,7 +1095,7 @@ if(!count($limits)){
 
 $SQL= "SELECT  ca_entities.entity_id , forename,surname,prefix from ca_entities left join ca_entity_labels on  
 ca_entities.entity_id = ca_entity_labels.entity_id
- where deleted=0 and ca_entities.type_id=67 and ca_entity_labels.locale_id=1 and("
+ where deleted=0 and ca_entities.type_id in ".$fate." and ca_entity_labels.locale_id=1 and("
 
 .
 implode( $values['onlyone']?" OR \n":" AND \n",$limits) 
@@ -968,11 +1103,12 @@ implode( $values['onlyone']?" OR \n":" AND \n",$limits)
 .") order by displayname";
 //echo info($SQL);
 //echo info($values['onlyone']==true?" OR \n":" AND \n");
-/*
+if(true){
 foreach($limits as $limit ){
     echo info ("Použit filtr:<br><pre>".$limit."</pre>","color:red;");//todo odebrat
 
-}*/
+}
+}
     //echo $SQL;
 try{    
 $dotaz = $pdo->query($SQL);
@@ -1003,17 +1139,29 @@ echo '<th>Důvod<br>deportace</th>';
 echo '<th>Místo<br>úmrtí</th>';
 echo '<th>Datum<br>úmrtí</th>';
 echo '<th>Poznámka</th>';
-echo '<th>Stát</th>';
+
 echo '</tr></thead><tbody>'."\n";
 
 
 foreach($dotaz  as $Row){
 $data=loadAtt($Row['entity_id']);
 $data2=loadOcc($Row['entity_id']);
+$data3=loadEntXEnt($Row['entity_id']);
 
 
     echo '<tr>';
-    echo '<td>'.$Row['surname'].' <a href="/index.php/editor/entities/EntityEditor/Edit/entity_id/'.$Row['entity_id'].'" class="no-print"  title="Upravit">e</a> </td>';
+
+    echo '<td>'.$Row['surname'];
+    echo ' '.name_normalize($Row['surname']).' ';
+    echo ' <a href="/index.php/editor/entities/EntityEditor/Edit/entity_id/'.$Row['entity_id'].'" class="no-print"  title="Upravit">e</a> ';
+    if($data3['family']) echo ' <a href="?family='.$Row['entity_id'].'" class="no-print"  title="Rodina">R</a> ';
+    if($data3['identical']) {
+        echo ' <a href="?identical='.$Row['entity_id'].'" class="no-print"  title="Identický">I</a> ';
+    }else{
+        echo ' <span  class="no-print"  >bez identické</a> ';
+    }
+
+    echo ' </td>';
     echo '<td>'.$Row['forename'].'</td>';
     echo '<td>'.$Row['prefix'].'</td>';
     echo '<td>'.$data['born'] .'</td>';
@@ -1036,7 +1184,7 @@ $data2=loadOcc($Row['entity_id']);
     echo '<td>'.$data['deathplace'] .'</td>';
     echo '<td>'.$data['death'] .'</td>';
     echo '<td>'.$data['remark']. '</td>';
-    echo '<td>Stát</td>';
+
     echo '</tr>'."\n";
     
     $cnt++;
@@ -1044,6 +1192,7 @@ $data2=loadOcc($Row['entity_id']);
 echo '</tbody></table>'."\n";
 //display reuslts
 echo "<hr>Celkem ve výpisu: ".$cnt;
+echo "<div class='counter no-print' >Celkem ve výpisu: ".$cnt."</div>";
 
 
 ?>
