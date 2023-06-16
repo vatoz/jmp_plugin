@@ -1,7 +1,7 @@
 CSV export
 <br><textarea rows="34" cols="99">
 <?php
-echo "Jméno\tIdno\n";
+echo "Jméno\tIdno\tid\n";
 
 $dsn = 'mysql:dbname=' . __CA_DB_DATABASE__ . ';host=' .__CA_DB_HOST__ . '';
 $user = __CA_DB_USER__;
@@ -19,7 +19,7 @@ try {
 
 
 
-  $Query="SELECT displayname, idno  FROM `ca_entities` inner join ca_entity_labels on ca_entities.entity_id= ca_entity_labels.entity_id   WHERE  `deleted` = '0'    and ca_entity_labels.locale_id=1  and  ca_entities.type_id in(63,67)
+  $Query="SELECT displayname, idno,  ca_entities.entity_id  FROM `ca_entities` inner join ca_entity_labels on ca_entities.entity_id= ca_entity_labels.entity_id   WHERE  `deleted` = '0'    and ca_entity_labels.locale_id=1  and  ca_entities.type_id in(63,67)
   order by length(displayname) desc
   ";
     
@@ -28,7 +28,7 @@ try {
 
     
 
-    echo $Row["displayname"]."\t".$Row["idno"]."\n";
+    echo $Row["displayname"]."\t".$Row["idno"]."\t".$Row['entity_id']."\n";
 
     
 
