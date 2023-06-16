@@ -79,11 +79,21 @@ foreach($sids as $id){
       
       $ids=array_merge($ids,getEntitiesIdentical($Row2["entity_id"])) ;     
       
-      
     }
 
+   $SQL3='SELECT ca_attribute_values.value_longtext1 FROM `ca_attributes`
+left join ca_attribute_values on ca_attributes.attribute_id=ca_attribute_values.attribute_id
+ WHERE `table_num` = 57 and ca_attributes.element_id=2 and row_id= '.$id;
+    $dotaz3 = $pdo->query($SQL3);
+    $Poznamka='';
+    foreach($dotaz3  as $Row3){
+       $Poznamka=$Row3['value_longtext1'];
+    }
+
+
+
     $ids_e=implode(", ", array_values( $ids) );
-    $data[$rep][]= "INSERT INTO `victim_images` ( `preview`, `small`, `medium`, `large`, `type`, `victim_id`, `object_id`, `idno`, `about`) SELECT '".$p['preview']."','".$p['small']."','".$p['medium']."','".$p['large']."',2, id, ".$id.", null,".$about." FROM victim where entity_id in(".$ids_e.") or id_external  in(".$ids_e.");"."<br>/*".$m[$Row1["representation_id"]]['tags']['preview']."*/<br><br>";
+    $data[$rep][]= "INSERT INTO `victim_images` ( `preview`, `small`, `medium`, `large`, `type`, `victim_id`, `object_id`, `idno`, `about`) SELECT '".$p['preview']."','".$p['small']."','".$p['medium']."','".$p['large']."',2, id, ".$id.", null,'".$Poznamka."' FROM victim where entity_id in(".$ids_e.") or id_external  in(".$ids_e.");"."<br>/*".$m[$Row1["representation_id"]]['tags']['preview']."*/<br><br>";
   }
 
 
