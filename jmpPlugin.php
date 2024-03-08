@@ -187,9 +187,19 @@ class jmpPlugin extends BaseApplicationPlugin {
 												'about'=>'about'
 											)
 										),
+
+ "drps2"=>array(
+                                                                                        "default" =>array('module'=>'jmp','controller'=>'Stats','action'=>'DRPSexport'),
+                                                                                        "displayName"=>"Kopie sady 647 do DRPS ",
+                                                                                        'is_enabled' => 1
+                                                                                      
+                                                                                ),
+
+
 										
 										"11"=>array( "default" =>array('module'=>'jmp','controller'=>'Stats','action'=>'ElementsRequired'),'requires' => array('action:jmp_stats'=>"OR"),"displayName"=>"Které elementy jsou vyžadovány??? asi. ",'is_enabled' => 1),    
 										array( "default" =>array('module'=>'jmp','controller'=>'Stats','action'=>'EntitiesTSV'),'requires' => array('action:jmp_stats'=>"OR"),"displayName"=>"Výpis tsv aktérů ŽMP (omezené) ",'is_enabled' => 1),    
+										array( "default" =>array('module'=>'jmp','controller'=>'Stats','action'=>'EntitiesChanges'),'requires' => array('action:jmp_stats'=>"OR"),"displayName"=>"Výpis aktérů ITI s datem změny",'is_enabled' => 1),    
 
 										array( "default" =>array('module'=>'jmp','controller'=>'Stats','action'=>'Fonts'),"displayName"=>"fonty",'is_enabled' => 1),
 

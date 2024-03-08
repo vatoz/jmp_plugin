@@ -47,6 +47,16 @@ class StatsController extends ActionController
        
     return $this->renderStat('DRPSObjects');
   }
+
+  function DRPSexport()
+  {
+
+    return $this->renderStat('DRPSexport');
+  }
+
+
+
+
  
   function ElementsRequired()
   {
@@ -57,6 +67,12 @@ class StatsController extends ActionController
   {
     return $this->renderStat('EntitiesTSV');
   }
+
+  function EntitiesChanges()
+  {
+    return $this->renderStat('EntitiesChanges');
+  }
+
 
   function Fonts()
   {
