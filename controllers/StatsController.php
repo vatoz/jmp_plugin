@@ -51,7 +51,7 @@ class StatsController extends ActionController
   function DRPSexport()
   {
 
-    return $this->renderStat('DRPSexport');
+    return $this->renderStat('DRPSexport',false);
   }
 
 
