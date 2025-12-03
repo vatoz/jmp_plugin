@@ -3,6 +3,7 @@ DRPS WIP
 <pre>
 <?php
 
+
 require_once(__CA_MODELS_DIR__."/ca_object_representations.php");
 require_once(__CA_MODELS_DIR__."/ca_sets.php");
 
@@ -83,11 +84,13 @@ foreach($sids as $id){
 
    $SQL3='SELECT ca_attribute_values.value_longtext1 FROM `ca_attributes`
 left join ca_attribute_values on ca_attributes.attribute_id=ca_attribute_values.attribute_id
- WHERE `table_num` = 57 and ca_attributes.element_id=2 and row_id= '.$id;
+ WHERE `table_num` = 57 and ca_attributes.element_id=2 and row_id= '.$id. ' order by value_id desc';
     $dotaz3 = $pdo->query($SQL3);
     $Poznamka='';
     foreach($dotaz3  as $Row3){
-       $Poznamka=$Row3['value_longtext1'];
+	if(strlen($Row3['value_longtext1']) ){
+	  $Poznamka=$Row3['value_longtext1'];
+	}
     }
 
 
