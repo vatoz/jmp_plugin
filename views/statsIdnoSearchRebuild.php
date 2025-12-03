@@ -71,6 +71,9 @@ $SQL="select ".$querypart." where deleted=0 and idno not in(
         $variants=explode("/",subpartrev(".",$Row["idno"]));
         $variants[]=$Row["idno"];
         $variants[]=subpartrev(".",$Row["idno"]);
+	if (substr(subpartrev(".",$Row["idno"]),0,2)=='PF'){
+		$variants[]=substr(subpartrev(".",$Row["idno"]),2,1000);
+	}
         array_unique($variants);
 
         $nok=true;
